@@ -1,0 +1,35 @@
+name: german_nouns_app
+description: A new Flutter project.
+
+publish_to: 'none' # Remove this line if you want to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^5.0.0
+  firebase_core: ^3.4.1
+  cloud_firestore: ^5.4.1
+  csv: "6.0.0"
+  firebase_auth: ^5.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.9.2
+  flutter_native_splash: ^1.2.1
+  flutter_svg: ^1.0.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/ArticleNounPairs.csv
+    - assets/galaxy.jpg
+    - assets/WelcomeText.txt
+    - assets/Adjectives.csv
+    - assets/GameOverFrame.svg

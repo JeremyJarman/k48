@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "932285654519",
+    "project_id": "k48a-955d3",
+    "storage_bucket": "k48a-955d3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932285654519:android:2c2a6c5e59974560a97af2",
+        "android_client_info": {
+          "package_name": "com.jeremyjarman.k48"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0DNppO54X_cQYl4CRQL866WHNPL3InwI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

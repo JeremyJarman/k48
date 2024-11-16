@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+        google() // Google's Maven repository
+        mavenCentral() // Maven Central repository
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.0.2' // Android Gradle plugin
+        classpath 'com.google.gms:google-services:4.4.2' // Google services plugin
+    }
+}
+
+allprojects {
+    repositories {
+        google() // Google's Maven repository
+        mavenCentral() // Maven Central repository
+    }
+}
+
+// Set custom build directories
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+
+// Define clean task
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
