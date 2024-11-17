@@ -8,21 +8,33 @@ import 'game_over_screen.dart';
 class MyAppState extends ChangeNotifier {
   List<Map<String, String>> nouns = [];
   List<Map<String, dynamic>> adjectives = [];
-  List<Map<String, String>> failedPairs = []; // Add a list to store failed pairs
+  List<Map<String, String>> failedPairs = [];
   int currentIndex = 0;
   String? selectedArticle;
   bool isCorrect = false;
   int correctStreak = 0;
   int highScore = 0;
-  int score = 0; // Add score variable
-  int healthPoints = 100; // Initialize health points to 100
-  int damageAmount = 10; // Default damage amount
-  int mana = 0; // Initialize mana to 0
-  String difficulty = 'Intermediate'; // Default difficulty
+  int score = 0;
+  int healthPoints = 100;
+  int damageAmount = 10;
+  int mana = 0;
+  String difficulty = 'Intermediate';
+  int rating = 0; // Add rating variable
+  String alias = ''; // Add alias variable
+  String lastStar = 'Home'; // Track the last star the user reached
+
+  List<Map<String, dynamic>> stars = [
+    {'name': 'SRC 1826', 'constellation': 'Pavo', 'distance': 30},
+    // Add more stars here
+  ];
 
   MyAppState() {
     fetchNouns();
     fetchAdjectives();
+    loadRating(); // Load rating when the app state is initialized
+    loadAlias(); // Load alias when the app state is initialized
+    fetchHighScore(); // Load high score when the app state is initialized
+    loadProgress(); // Load progress when the app state is initialized
   }
 
   Future<void> fetchNouns() async {
@@ -37,7 +49,10 @@ class MyAppState extends ChangeNotifier {
             'article': pair['article'] as String? ?? '',
           };
         }).toList();
+        print('Fetched nouns: $nouns'); // Debugging information
         notifyListeners();
+      } else {
+        print('No document found for Nouns/allPairs');
       }
     } catch (e) {
       print('Error fetching nouns: $e');
@@ -61,10 +76,10 @@ class MyAppState extends ChangeNotifier {
         });
       }
 
-      // Store all pairs in a single document
       await FirebaseFirestore.instance.collection('Nouns').doc('allPairs').set({
         'pairs': nounArticlePairs,
       });
+      print('Loaded nouns from assets: $nounArticlePairs'); // Debugging information
     } catch (e) {
       print('Error loading nouns from assets: $e');
     }
@@ -83,7 +98,10 @@ class MyAppState extends ChangeNotifier {
             'translation': pair['translation'] as String? ?? '',
           };
         }).toList();
+        print('Fetched adjectives: $adjectives'); // Debugging information
         notifyListeners();
+      } else {
+        print('No document found for adjectives/allAdjectives');
       }
     } catch (e) {
       print('Error fetching adjectives: $e');
@@ -92,7 +110,7 @@ class MyAppState extends ChangeNotifier {
 
   Future<void> loadAdjectivesFromAssets() async {
     try {
-      final csvData = await rootBundle.loadString('assets/Adjectives.csv');
+      final csvData = await rootBundle.loadString('assets/adjectives.csv');
       List<List<dynamic>> rows = const CsvToListConverter().convert(csvData);
 
       List<Map<String, dynamic>> adjectivePairs = [];
@@ -109,10 +127,10 @@ class MyAppState extends ChangeNotifier {
         });
       }
 
-      // Store all pairs in a single document
       await FirebaseFirestore.instance.collection('adjectives').doc('allAdjectives').set({
         'adjectives': adjectivePairs,
       });
+      print('Loaded adjectives from assets: $adjectivePairs'); // Debugging information
     } catch (e) {
       print('Error loading adjectives from assets: $e');
     }
@@ -122,13 +140,22 @@ class MyAppState extends ChangeNotifier {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final difficultyDoc = 'Nouns_${difficulty.toLowerCase()}';
-    final docRef = FirebaseFirestore.instance.collection('scores').doc(difficultyDoc);
+    final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
     final doc = await docRef.get();
     if (doc.exists) {
       final data = doc.data() as Map<String, dynamic>;
-      highScore = data[user.uid] as int? ?? 0;
+      switch (difficulty) {
+        case 'Easy':
+          highScore = data['score_easy'] as int? ?? 0;
+          break;
+        case 'Intermediate':
+          highScore = data['score_intermediate'] as int? ?? 0;
+          break;
+        case 'Hardcore':
+          highScore = data['score_hardcore'] as int? ?? 0;
+          break;
+      }
     } else {
       highScore = 0;
     }
@@ -137,11 +164,11 @@ class MyAppState extends ChangeNotifier {
 
   void setDifficulty(String difficulty) {
     this.difficulty = difficulty;
-    score = 0; // Reset score at the beginning of a new quiz
-    mana = 0; // Reset mana at the beginning of a new quiz
-    correctStreak = 0; // Reset correct streak at the beginning of a new quiz
-    failedPairs.clear(); // Clear the list of failed pairs at the beginning of a new quiz
-    fetchHighScore(); // Fetch high score from database
+    score = 0;
+    mana = 0;
+    correctStreak = 0;
+    failedPairs.clear();
+    fetchHighScore();
     switch (difficulty) {
       case 'Easy':
         damageAmount = 10;
@@ -175,25 +202,44 @@ class MyAppState extends ChangeNotifier {
     if (nouns[currentIndex]['article'] == selectedArticle) {
       isCorrect = true;
       correctStreak++;
-      score++; // Increment score
-      mana = (mana + 10).clamp(0, 100); // Increment mana
+      score++;
+      mana = (mana + 10).clamp(0, 100);
       if (correctStreak > highScore) {
         highScore = correctStreak;
       }
+      // Increase rating points based on difficulty
+      switch (difficulty) {
+        case 'Easy':
+          rating += 10;
+          break;
+        case 'Intermediate':
+          rating += 20;
+          break;
+        case 'Hardcore':
+          rating += 30;
+          break;
+      }
+      // Check if the user has reached a new star
+      for (var star in stars) {
+        if (score >= star['distance'] && lastStar != star['name']) {
+          lastStar = star['name'];
+          saveProgress();
+          break;
+        }
+      }
     } else {
       isCorrect = false;
-      correctStreak = 0; // Reset correct streak on wrong answer
-      healthPoints -= damageAmount; // Deduct health points
-      mana = 0; // Reset mana on incorrect answer
-      // Ensure the failed pair is not already in the list
+      correctStreak = 0;
+      healthPoints -= damageAmount;
+      mana = 0;
       if (!failedPairs.any((pair) => pair['noun'] == nouns[currentIndex]['noun'] && pair['article'] == nouns[currentIndex]['article'])) {
-        failedPairs.add(nouns[currentIndex]); // Add the failed pair to the list if it's not already there
+        failedPairs.add(nouns[currentIndex]);
       }
       if (healthPoints <= 0) {
         healthPoints = 0;
         print('Game Over');
-        // Handle game over logic here
         await updateHighScore();
+        await saveRating(); // Save rating when the player dies
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => GameOverScreen(score: score, failedPairs: failedPairs)),
@@ -207,24 +253,50 @@ class MyAppState extends ChangeNotifier {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final difficultyDoc = 'Nouns_${difficulty.toLowerCase()}';
-    final docRef = FirebaseFirestore.instance.collection('scores').doc(difficultyDoc);
+    final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
     final doc = await docRef.get();
     if (doc.exists) {
       final data = doc.data() as Map<String, dynamic>;
-      final userHighScore = data[user.uid] as int? ?? 0;
-      if (score > userHighScore) {
-        await docRef.update({user.uid: score});
+      int currentHighScore;
+      switch (difficulty) {
+        case 'Easy':
+          currentHighScore = data['score_easy'] as int? ?? 0;
+          if (score > currentHighScore) {
+            await docRef.update({'score_easy': score});
+          }
+          break;
+        case 'Intermediate':
+          currentHighScore = data['score_intermediate'] as int? ?? 0;
+          if (score > currentHighScore) {
+            await docRef.update({'score_intermediate': score});
+          }
+          break;
+        case 'Hardcore':
+          currentHighScore = data['score_hardcore'] as int? ?? 0;
+          if (score > currentHighScore) {
+            await docRef.update({'score_hardcore': score});
+          }
+          break;
       }
     } else {
-      await docRef.set({user.uid: score});
+      switch (difficulty) {
+        case 'Easy':
+          await docRef.set({'score_easy': score}, SetOptions(merge: true));
+          break;
+        case 'Intermediate':
+          await docRef.set({'score_intermediate': score}, SetOptions(merge: true));
+          break;
+        case 'Hardcore':
+          await docRef.set({'score_hardcore': score}, SetOptions(merge: true));
+          break;
+      }
     }
   }
 
   void nextNoun() {
     currentIndex = (currentIndex + 1) % nouns.length;
-    isCorrect = false; // Reset the correctness flag
+    isCorrect = false;
     notifyListeners();
   }
 
@@ -242,7 +314,140 @@ class MyAppState extends ChangeNotifier {
       default:
         healthPoints = (healthPoints + 10).clamp(0, 100);
     }
-    mana = 0; // Reset mana after using the heart button
+    mana = 0;
     notifyListeners();
+  }
+
+  Future<void> saveRating() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'rating': rating,
+      }, SetOptions(merge: true));
+    }
+  }
+
+  Future<void> loadRating() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        rating = doc.data()?['rating'] ?? 0;
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> loadAlias() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        alias = doc.data()?['alias'] ?? '';
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> saveProgress() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'lastStar': lastStar,
+      }, SetOptions(merge: true));
+    }
+  }
+
+  Future<void> loadProgress() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        lastStar = doc.data()?['lastStar'] ?? 'Home';
+        notifyListeners();
+      }
+    }
+  }
+
+  int getDistanceToNearestStar() {
+    for (var star in stars) {
+      if (score < star['distance']) {
+        return star['distance'] - score;
+      }
+    }
+    return 0; // If all stars are reached
+  }
+
+  String getRank() {
+    if (rating < 300) return 'Warp Gate Intern';
+    if (rating < 600) return 'Junior Navigator';
+    if (rating < 900) return 'Gate Explorer';
+    if (rating < 1200) return 'Dimensional Pilot';
+    if (rating < 1500) return 'Ancient Scholar';
+    if (rating < 1800) return 'Astro Voyager';
+    if (rating < 2100) return 'Interstellar Pioneer';
+    return 'Galactic Legend';
+  }
+
+  String getLevel() {
+    int level = (rating % 300) ~/ 100;
+    switch (level) {
+      case 0:
+        return 'Bronze';
+      case 1:
+        return 'Silver';
+      case 2:
+        return 'Gold';
+      default:
+        return 'Bronze';
+    }
+  }
+
+  String getTagline() {
+    String rank = getRank();
+    String level = getLevel();
+    Map<String, Map<String, String>> taglines = {
+      'Warp Gate Intern': {
+        'Bronze': 'Gate Grunt',
+        'Silver': 'Code Cracker',
+        'Gold': 'Article Apprentice',
+      },
+      'Junior Navigator': {
+        'Bronze': 'Directionally Challenged',
+        'Silver': 'Warp Wannabe',
+        'Gold': 'Almost Lost',
+      },
+      'Gate Explorer': {
+        'Bronze': 'Star Stumbler',
+        'Silver': 'Galaxy Glider',
+        'Gold': 'Space Surveyor',
+      },
+      'Dimensional Pilot': {
+        'Bronze': 'Momentum Miser',
+        'Silver': 'Deceleration Dodger',
+        'Gold': 'Gravity Gambler',
+      },
+      'Ancient Scholar': {
+        'Bronze': 'Noun Novice',
+        'Silver': 'Article Adept',
+        'Gold': 'Grammar Gladiator',
+      },
+      'Astro Voyager': {
+        'Bronze': 'Void Venturer',
+        'Silver': 'Nebula Navigator',
+        'Gold': 'Stellar Specialist',
+      },
+      'Interstellar Pioneer': {
+        'Bronze': 'Warp Wizard',
+        'Silver': 'Star Streamliner',
+        'Gold': 'Cosmic Commander',
+      },
+      'Galactic Legend': {
+        'Bronze': 'Linguistic Luminary',
+        'Silver': 'Universal Gatekeeper',
+        'Gold': 'Warp Guardian',
+      },
+    };
+    return taglines[rank]?[level] ?? '';
   }
 }

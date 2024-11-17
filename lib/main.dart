@@ -8,7 +8,10 @@ import 'my_app_state.dart'; // Import the MyAppState
 import 'auth_wrapper.dart'; // Import the AuthWrapper
 import 'difficulty_selection.dart'; // Import the DifficultySelection
 import 'admin_panel.dart'; // Import the AdminPanel
+import 'profile_page.dart'; // Import the ProfilePage
+import 'leaderboard_page.dart'; // Import the LeaderboardPage
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:random_avatar/random_avatar.dart'; // Import the random_avatar package
 
 void customPrint(Object? object) => debugPrint(object.toString());
 
@@ -62,8 +65,58 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    var appState = context.watch<MyAppState>();
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Home'),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (String result) {
+              if (result == 'Profile') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+              } else if (result == 'Admin Panel') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AdminPanel()),
+                );
+              } else if (result == 'Leaderboard') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LeaderboardPage()),
+                );
+              } else if (result == 'Logout') {
+                FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'Profile',
+                child: Text('Profile'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Admin Panel',
+                child: Text('Admin Panel'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Leaderboard',
+                child: Text('Leaderboard'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Logout',
+                child: Text('Logout'),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -71,60 +124,51 @@ class _MyHomePageState extends State<MyHomePage> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Welcome to k48!',
-                style: TextStyle(fontSize: 24, color: Colors.white), // Set text color to white for better contrast
-                textAlign: TextAlign.center, // Center the text
+        child: Stack(
+          children: [
+            Positioned(
+              top: 10,
+              left: 10,
+              child: Text(
+                'Nearest Star: ${appState.getDistanceToNearestStar()} ly',
+                style: TextStyle(fontSize: 16, color: Colors.white),
               ),
-              SizedBox(height: 20),
-              Container(
-                height: screenHeight * 0.5, // Limit the height to half the screen height
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Text(
-                    description,
-                    style: TextStyle(fontSize: 16, color: Colors.white), // Set text color to white for better contrast
+            ),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Welcome to k48!',
+                    style: TextStyle(fontSize: 24, color: Colors.white), // Set text color to white for better contrast
                     textAlign: TextAlign.center, // Center the text
                   ),
-                ),
+                  SizedBox(height: 20),
+                  Container(
+                    height: screenHeight * 0.5, // Limit the height to half the screen height
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Text(
+                        description,
+                        style: TextStyle(fontSize: 16, color: Colors.white), // Set text color to white for better contrast
+                        textAlign: TextAlign.center, // Center the text
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => DifficultySelection()),
+                      );
+                    },
+                    child: Text('Solo mission'),
+                  ),
+                ],
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DifficultySelection()),
-                  );
-                },
-                child: Text('Solo mission'),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AdminPanel()),
-                  );
-                },
-                child: Text('Admin Panel'),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
-                },
-                child: Text('Logout'),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
