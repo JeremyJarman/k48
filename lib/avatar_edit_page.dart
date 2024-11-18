@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:random_avatar/random_avatar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -16,44 +15,37 @@ class AvatarEditPage extends StatefulWidget {
 
 class _AvatarEditPageState extends State<AvatarEditPage> {
   late String avatarSeed;
-  final TextEditingController seedController = TextEditingController();
   final TextEditingController aliasController = TextEditingController();
+  String? _selectedImage;
 
   @override
   void initState() {
     super.initState();
     avatarSeed = widget.initialSeed;
-    seedController.text = avatarSeed;
     aliasController.text = widget.initialAlias;
   }
 
-  void setRandomAvatar() {
-    setState(() {
-      avatarSeed = DateTime.now().millisecondsSinceEpoch.toString();
-      seedController.text = avatarSeed;
-    });
-  }
-
-  void setAvatarFromSeed() {
-    setState(() {
-      avatarSeed = seedController.text;
-    });
-  }
-
-  Future<void> saveProfile() async {
+  Future<void> _saveProfile() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
+    if (user != null && _selectedImage != null) {
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'avatarSeed': avatarSeed,
+        'avatarUrl': _selectedImage,
         'alias': aliasController.text,
       }, SetOptions(merge: true));
+
+      widget.onAvatarSelected(_selectedImage!);
+      Navigator.pop(context);
     }
-    widget.onAvatarSelected(avatarSeed);
-    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    final List<String> images = [
+      'assets/Nexar2.jpg',
+      'assets/Aevone.jpg',
+       // Add more images as needed
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Profile'),
@@ -71,37 +63,22 @@ class _AvatarEditPageState extends State<AvatarEditPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                RandomAvatar(avatarSeed, // Generate a random avatar
-                  height: 100,
-                  width: 100,
-                ),
+                _selectedImage == null
+                    ? Text('No image selected.', style: TextStyle(color: Colors.white))
+                    : Image.asset(_selectedImage!, height: 100, width: 100),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: setRandomAvatar,
-                  child: Text('Generate Random Avatar'),
-                ),
-                SizedBox(height: 20),
-                TextField(
-                  controller: seedController,
-                  decoration: InputDecoration(
-                    labelText: 'Enter Seed',
-                    labelStyle: TextStyle(color: Colors.white),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                  ),
-                  style: TextStyle(color: Colors.white),
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: setAvatarFromSeed,
-                  child: Text('Set Avatar from Seed'),
+                Wrap(
+                  spacing: 10,
+                  children: images.map((image) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedImage = image;
+                        });
+                      },
+                      child: Image.asset(image, height: 50, width: 50),
+                    );
+                  }).toList(),
                 ),
                 SizedBox(height: 20),
                 TextField(
@@ -123,7 +100,7 @@ class _AvatarEditPageState extends State<AvatarEditPage> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: saveProfile,
+                  onPressed: _saveProfile,
                   child: Text('Save Profile'),
                 ),
               ],

@@ -4,6 +4,10 @@ import 'my_app_state.dart';
 import 'german_noun_quiz.dart';
 
 class DifficultySelection extends StatelessWidget {
+  final String agent;
+
+  DifficultySelection({required this.agent});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +41,7 @@ class DifficultySelection extends StatelessWidget {
                   Provider.of<MyAppState>(context, listen: false).setDifficulty('Easy');
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GermanNounQuiz()),
+                    MaterialPageRoute(builder: (context) => GermanNounQuiz(agent: agent)),
                   );
                 },
                 child: Text('Easy'),
@@ -48,7 +52,7 @@ class DifficultySelection extends StatelessWidget {
                   Provider.of<MyAppState>(context, listen: false).setDifficulty('Intermediate');
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GermanNounQuiz()),
+                    MaterialPageRoute(builder: (context) => GermanNounQuiz(agent: agent)),
                   );
                 },
                 child: Text('Intermediate'),
@@ -59,7 +63,7 @@ class DifficultySelection extends StatelessWidget {
                   Provider.of<MyAppState>(context, listen: false).setDifficulty('Hardcore');
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GermanNounQuiz()),
+                    MaterialPageRoute(builder: (context) => GermanNounQuiz(agent: agent)),
                   );
                 },
                 child: Text('Hardcore'),

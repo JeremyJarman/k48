@@ -8,8 +8,13 @@ import 'shake_animation_controller.dart';
 import 'add_health_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'main.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class GermanNounQuiz extends StatefulWidget {
+  final String agent;
+  
+  GermanNounQuiz({required this.agent});
+
   @override
   _GermanNounQuizState createState() => _GermanNounQuizState();
 }
@@ -48,6 +53,16 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
           child: CircularProgressIndicator(),
         ),
       );
+    }
+    
+    IconData abilityIcon;
+    
+    if (widget.agent == 'Nexar') {
+      abilityIcon = MdiIcons.shield;
+    } else if (widget.agent == 'Aevone') {
+      abilityIcon = MdiIcons.magnify;
+    } else {
+      abilityIcon = Icons.help; // Default icon if no agent is selected
     }
 
     if (appState.mana >= 10) {
@@ -198,8 +213,20 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: AddHealthButton(shakeController: _shakeController),
+              padding: const EdgeInsets.only(bottom:20.0),
+            child: Row(
+              
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AddHealthButton(shakeController: _shakeController,), // Heart icon button
+                  SizedBox(width: 35),
+                  Icon(
+                    abilityIcon,
+                    color: Colors.white,
+                    size: 35,
+                  ),
+                ],
+              ),
             ),
           ),
           Align(

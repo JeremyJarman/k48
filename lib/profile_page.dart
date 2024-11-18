@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:random_avatar/random_avatar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'login_page.dart';
 import 'avatar_edit_page.dart';
@@ -14,60 +13,25 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String avatarSeed = 'initial_seed';
+  String avatarUrl = '';
   String alias = '';
 
   @override
   void initState() {
     super.initState();
-    loadAvatarSeed();
-    loadAlias();
+    loadProfileData();
   }
 
-  Future<void> loadAvatarSeed() async {
+  Future<void> loadProfileData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       if (doc.exists) {
         setState(() {
-          avatarSeed = doc.data()?['avatarSeed'] ?? 'initial_seed';
-        });
-      }
-    }
-  }
-
-  Future<void> loadAlias() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-      if (doc.exists) {
-        setState(() {
+          avatarUrl = doc.data()?['avatarUrl'] ?? '';
           alias = doc.data()?['alias'] ?? '';
         });
       }
-    }
-  }
-
-  void setRandomAvatar() {
-    setState(() {
-      avatarSeed = DateTime.now().millisecondsSinceEpoch.toString();
-    });
-    saveAvatarSeed();
-  }
-
-  void updateAvatar(String newSeed) {
-    setState(() {
-      avatarSeed = newSeed;
-    });
-    saveAvatarSeed();
-  }
-
-  Future<void> saveAvatarSeed() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'avatarSeed': avatarSeed,
-      }, SetOptions(merge: true));
     }
   }
 
@@ -100,14 +64,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 200),
+                  SizedBox(height: 20),
                   Stack(
                     alignment: Alignment.topRight,
                     children: [
-                      RandomAvatar(avatarSeed,trBackground: true, // Generate a random avatar
-                        height: 130,
-                        width: 130,
-                      ),
+                      avatarUrl.isEmpty
+                          ? Text('No image selected.', style: TextStyle(color: Colors.white))
+                          : Image.network(avatarUrl, height: 130, width: 130),
                       IconButton(
                         icon: Icon(Icons.edit, color: Colors.white),
                         onPressed: () {
@@ -115,24 +78,33 @@ class _ProfilePageState extends State<ProfilePage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => AvatarEditPage(
-                                initialSeed: avatarSeed,
-                                onAvatarSelected: updateAvatar,
-                                initialAlias: alias, // Pass the initial alias
+                                initialSeed: '',
+                                onAvatarSelected: (newUrl) {
+                                  setState(() {
+                                    avatarUrl = newUrl;
+                                  });
+                                },
+                                initialAlias: alias,
                               ),
                             ),
-                          ).then((_) => loadAlias()); // Reload alias after returning from edit page
+                          ).then((_) => loadProfileData()); // Reload profile data after returning from edit page
                         },
                       ),
                     ],
                   ),
-                 
                   SizedBox(height: 10),
                   Text(
-                    '$alias the ${appState.getTagline()}',
+                    alias,
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    '${appState.getTagline()}',
                     style: TextStyle(fontSize: 16, color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 130),
+                  SizedBox(height: 40),
                   Text(
                     'Rank:',
                     style: TextStyle(fontSize: 20, color: Colors.white),

@@ -16,6 +16,7 @@ dependencies:
   cloud_firestore: ^5.4.1
   csv: "6.0.0"
   firebase_auth: ^5.3.1
+ 
 
 dev_dependencies:
   flutter_test:
@@ -24,7 +25,9 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.1
   flutter_native_splash: ^2.2.16
   flutter_svg: ^2.0.0
+  firebase_storage: ^12.3.5
   random_avatar: ^0.0.8
+  material_design_icons_flutter: ^5.0.5955
 
 flutter:
   uses-material-design: true
@@ -35,3 +38,5 @@ flutter:
     - assets/Adjectives.csv
     - assets/GameOverFrame.svg
     - assets/stars.jpg
+    - assets/Nexar2.jpg
+    - assets/Aevone.jpg

@@ -22,6 +22,7 @@ class MyAppState extends ChangeNotifier {
   int rating = 0; // Add rating variable
   String alias = ''; // Add alias variable
   String lastStar = 'Home'; // Track the last star the user reached
+  List<String> _articles = ['der', 'die', 'das']; // Example articles
 
   List<Map<String, dynamic>> stars = [
     {'name': 'SRC 1826', 'constellation': 'Pavo', 'distance': 30},
@@ -450,4 +451,6 @@ class MyAppState extends ChangeNotifier {
     };
     return taglines[rank]?[level] ?? '';
   }
+
+  List<String> get articles => _articles;
 }

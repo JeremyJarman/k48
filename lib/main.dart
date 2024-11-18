@@ -10,8 +10,8 @@ import 'difficulty_selection.dart'; // Import the DifficultySelection
 import 'admin_panel.dart'; // Import the AdminPanel
 import 'profile_page.dart'; // Import the ProfilePage
 import 'leaderboard_page.dart'; // Import the LeaderboardPage
+import 'agent_selection_page.dart'; // Import the AgentSelectionPage
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:random_avatar/random_avatar.dart'; // Import the random_avatar package
 
 void customPrint(Object? object) => debugPrint(object.toString());
 
@@ -160,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => DifficultySelection()),
+                        MaterialPageRoute(builder: (context) => AgentSelectionPage()),
                       );
                     },
                     child: Text('Solo mission'),
