@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'firebase_options.dart';
 import 'login_page.dart'; // Import the login page
 import 'my_app_state.dart'; // Import the MyAppState
@@ -13,7 +14,7 @@ import 'leaderboard_page.dart'; // Import the LeaderboardPage
 import 'agent_selection_page.dart'; // Import the AgentSelectionPage
 import 'package:flutter/services.dart' show rootBundle;
 
-void customPrint(Object? object) => debugPrint(object.toString());
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +28,8 @@ void main() async {
     ),
   );
 }
+
+void customPrint(Object? object) => debugPrint(object.toString());
 
 class GermanNounApp extends StatelessWidget {
   @override
@@ -140,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Text(
                     'Welcome to k48!',
-                    style: TextStyle(fontSize: 24, color: Colors.white), // Set text color to white for better contrast
+                    style: TextStyle(fontSize: 26, color: Colors.white), // Set text color to white for better contrast
                     textAlign: TextAlign.center, // Center the text
                   ),
                   SizedBox(height: 20),
@@ -160,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AgentSelectionPage()),
+                        MaterialPageRoute(builder: (context) => DifficultySelection(agent: 'Aevone')),
                       );
                     },
                     child: Text('Solo mission'),

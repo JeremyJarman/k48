@@ -171,17 +171,9 @@ class NounCard extends StatelessWidget {
               '(D) mit ein$dativeUnbestimmtEnding $randomAdjective$dativeUnbestimmtAEnding $noun',
               style: TextStyle(fontSize: 16, color: Colors.white),
             ),
-            Text(
-              '(D) mit $randomAdjective$dativeOhneAEnding $noun',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
             SizedBox(height: 10),
             Text(
               '(A) für d$accusativeBestimmtEnding $randomAdjective$accusativeBestimmtAEnding $noun',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-            Text(
-              '(A) für $randomAdjective$accusativeOhneAEnding $noun',
               style: TextStyle(fontSize: 16, color: Colors.white),
             ),
           ],

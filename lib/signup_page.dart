@@ -12,6 +12,7 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nicknameController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String _errorMessage = '';
 
   Future<void> _signup() async {
     try {
@@ -25,12 +26,22 @@ class _SignupPageState extends State<SignupPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MyHomePage()),
+        MaterialPageRoute(builder: (context) => GermanNounApp()),
       );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        if (e.code == 'weak-password') {
+          _errorMessage = 'The password provided is too weak.';
+        } else if (e.code == 'email-already-in-use') {
+          _errorMessage = 'The account already exists for that email.';
+        } else {
+          _errorMessage = 'An error occurred. Please try again.';
+        }
+      });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to sign up: $e')),
-      );
+      setState(() {
+        _errorMessage = 'An error occurred. Please try again.';
+      });
     }
   }
 
@@ -47,34 +58,28 @@ class _SignupPageState extends State<SignupPage> {
           children: [
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(labelText: 'Email'),
             ),
-            SizedBox(height: 20),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
-            SizedBox(height: 20),
             TextField(
               controller: _nicknameController,
-              decoration: InputDecoration(
-                labelText: 'Nickname',
-                border: OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: 'Nickname'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: _signup,
               child: Text('Sign Up'),
             ),
+            SizedBox(height: 20),
+            if (_errorMessage.isNotEmpty)
+              Text(
+                _errorMessage,
+                style: TextStyle(color: Colors.red),
+              ),
           ],
         ),
       ),

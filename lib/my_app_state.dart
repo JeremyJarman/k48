@@ -19,7 +19,7 @@ class MyAppState extends ChangeNotifier {
   int damageAmount = 10;
   int mana = 0;
   String difficulty = 'Intermediate';
-  int rating = 0; // Add rating variable
+  int elo = 0; // Replace rating with elo
   String alias = ''; // Add alias variable
   String lastStar = 'Home'; // Track the last star the user reached
   List<String> _articles = ['der', 'die', 'das']; // Example articles
@@ -32,7 +32,7 @@ class MyAppState extends ChangeNotifier {
   MyAppState() {
     fetchNouns();
     fetchAdjectives();
-    loadRating(); // Load rating when the app state is initialized
+    loadElo(); // Load elo when the app state is initialized
     loadAlias(); // Load alias when the app state is initialized
     fetchHighScore(); // Load high score when the app state is initialized
     loadProgress(); // Load progress when the app state is initialized
@@ -50,10 +50,7 @@ class MyAppState extends ChangeNotifier {
             'article': pair['article'] as String? ?? '',
           };
         }).toList();
-        print('Fetched nouns: $nouns'); // Debugging information
         notifyListeners();
-      } else {
-        print('No document found for Nouns/allPairs');
       }
     } catch (e) {
       print('Error fetching nouns: $e');
@@ -99,7 +96,7 @@ class MyAppState extends ChangeNotifier {
             'translation': pair['translation'] as String? ?? '',
           };
         }).toList();
-        print('Fetched adjectives: $adjectives'); // Debugging information
+        print('Fetched adjectives Successful'); // Debugging information
         notifyListeners();
       } else {
         print('No document found for adjectives/allAdjectives');
@@ -208,16 +205,16 @@ class MyAppState extends ChangeNotifier {
       if (correctStreak > highScore) {
         highScore = correctStreak;
       }
-      // Increase rating points based on difficulty
+      // Increase elo points based on difficulty
       switch (difficulty) {
         case 'Easy':
-          rating += 10;
+          elo += 10;
           break;
         case 'Intermediate':
-          rating += 20;
+          elo += 20;
           break;
         case 'Hardcore':
-          rating += 30;
+          elo += 30;
           break;
       }
       // Check if the user has reached a new star
@@ -228,6 +225,8 @@ class MyAppState extends ChangeNotifier {
           break;
         }
       }
+      // Move to the next noun only if the answer is correct
+      currentIndex = (currentIndex + 1) % nouns.length;
     } else {
       isCorrect = false;
       correctStreak = 0;
@@ -240,13 +239,14 @@ class MyAppState extends ChangeNotifier {
         healthPoints = 0;
         print('Game Over');
         await updateHighScore();
-        await saveRating(); // Save rating when the player dies
+        await saveElo(); // Save elo when the player dies
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => GameOverScreen(score: score, failedPairs: failedPairs)),
         );
       }
     }
+    // Retain the selected article
     notifyListeners();
   }
 
@@ -319,21 +319,21 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveRating() async {
+  Future<void> saveElo() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'rating': rating,
+        'elo': elo,
       }, SetOptions(merge: true));
     }
   }
 
-  Future<void> loadRating() async {
+  Future<void> loadElo() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       if (doc.exists) {
-        rating = doc.data()?['rating'] ?? 0;
+        elo = doc.data()?['elo'] ?? 0;
         notifyListeners();
       }
     }
@@ -380,27 +380,27 @@ class MyAppState extends ChangeNotifier {
   }
 
   String getRank() {
-    if (rating < 300) return 'Warp Gate Intern';
-    if (rating < 600) return 'Junior Navigator';
-    if (rating < 900) return 'Gate Explorer';
-    if (rating < 1200) return 'Dimensional Pilot';
-    if (rating < 1500) return 'Ancient Scholar';
-    if (rating < 1800) return 'Astro Voyager';
-    if (rating < 2100) return 'Interstellar Pioneer';
-    return 'Galactic Legend';
+    if (elo < 300) return 'Intern';
+    if (elo < 600) return 'Navigator';
+    if (elo < 900) return 'Explorer';
+    if (elo < 1200) return 'Pilot';
+    if (elo < 1500) return 'Scholar';
+    if (elo < 1800) return 'Voyager';
+    if (elo < 2100) return 'Pioneer';
+    return 'Legend';
   }
 
   String getLevel() {
-    int level = (rating % 300) ~/ 100;
+    int level = (elo % 300) ~/ 100;
     switch (level) {
       case 0:
-        return 'Bronze';
+        return '1';
       case 1:
-        return 'Silver';
+        return '2';
       case 2:
-        return 'Gold';
+        return '3';
       default:
-        return 'Bronze';
+        return '1';
     }
   }
 
@@ -408,48 +408,73 @@ class MyAppState extends ChangeNotifier {
     String rank = getRank();
     String level = getLevel();
     Map<String, Map<String, String>> taglines = {
-      'Warp Gate Intern': {
-        'Bronze': 'Gate Grunt',
-        'Silver': 'Code Cracker',
-        'Gold': 'Article Apprentice',
+      'Intern': {
+        '1': 'Gate Grunt',
+        '2': 'Code Cracker',
+        '3': 'Article Apprentice',
       },
-      'Junior Navigator': {
-        'Bronze': 'Directionally Challenged',
-        'Silver': 'Warp Wannabe',
-        'Gold': 'Almost Lost',
+      'Navigator': {
+        '1': 'Directionally Challenged',
+        '2': 'Warp Wannabe',
+        '3': 'Almost Lost',
       },
-      'Gate Explorer': {
-        'Bronze': 'Star Stumbler',
-        'Silver': 'Galaxy Glider',
-        'Gold': 'Space Surveyor',
+      'Explorer': {
+        '1': 'Star Stumbler',
+        '2': 'Galaxy Glider',
+        '3': 'Space Surveyor',
       },
-      'Dimensional Pilot': {
-        'Bronze': 'Momentum Miser',
-        'Silver': 'Deceleration Dodger',
-        'Gold': 'Gravity Gambler',
+      'Pilot': {
+        '1': 'Momentum Miser',
+        '2': 'Deceleration Dodger',
+        '3': 'Gravity Gambler',
       },
-      'Ancient Scholar': {
-        'Bronze': 'Noun Novice',
-        'Silver': 'Article Adept',
-        'Gold': 'Grammar Gladiator',
+      'Scholar': {
+        '1': 'Noun Novice',
+        '2': 'Article Adept',
+        '3': 'Grammar Gladiator',
       },
-      'Astro Voyager': {
-        'Bronze': 'Void Venturer',
-        'Silver': 'Nebula Navigator',
-        'Gold': 'Stellar Specialist',
+      'Voyager': {
+        '1': 'Void Venturer',
+        '2': 'Nebula Navigator',
+        '3': 'Stellar Specialist',
       },
-      'Interstellar Pioneer': {
-        'Bronze': 'Warp Wizard',
-        'Silver': 'Star Streamliner',
-        'Gold': 'Cosmic Commander',
+      'Pioneer': {
+        '1': 'Warp Wizard',
+        '2': 'Star Streamliner',
+        '3': 'Cosmic Commander',
       },
-      'Galactic Legend': {
-        'Bronze': 'Linguistic Luminary',
-        'Silver': 'Universal Gatekeeper',
-        'Gold': 'Warp Guardian',
+      'Legend': {
+        '1': 'Linguistic Luminary',
+        '2': 'Universal Gatekeeper',
+        '3': 'Warp Guardian',
       },
     };
     return taglines[rank]?[level] ?? '';
+  }
+
+  String getRankFromElo(int elo) {
+    if (elo < 300) return 'Intern';
+    if (elo < 600) return 'Navigator';
+    if (elo < 900) return 'Explorer';
+    if (elo < 1200) return 'Pilot';
+    if (elo < 1500) return 'Scholar';
+    if (elo < 1800) return 'Voyager';
+    if (elo < 2100) return 'Pioneer';
+    return 'Legend';
+  }
+
+  String getLevelFromElo(int elo) {
+    int level = (elo % 300) ~/ 100;
+    switch (level) {
+      case 0:
+        return '1';
+      case 1:
+        return '2';
+      case 2:
+        return '3';
+      default:
+        return '1';
+    }
   }
 
   List<String> get articles => _articles;

@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart'
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
-/// Example:
+/// Example: test
 /// ```dart
 /// import 'firebase_options.dart';
 /// // ...
@@ -78,12 +78,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyBp3709qufh1d1PpKXBlD0JOy7eDW2konI',
-    appId: '1:932285654519:web:2e6b63e44427cab9a97af2',
+    appId: '1:932285654519:web:82d5730159a4d1dea97af2',
     messagingSenderId: '932285654519',
     projectId: 'k48a-955d3',
     authDomain: 'k48a-955d3.firebaseapp.com',
     storageBucket: 'k48a-955d3.firebasestorage.app',
-    measurementId: 'G-B3YE0JX7MQ',
+    measurementId: 'G-3J5MK0LZXL',
   );
 
 }

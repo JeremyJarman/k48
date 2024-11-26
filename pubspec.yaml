@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   provider: ^5.0.0
   firebase_core: ^3.4.1
+  firebase_analytics: ^11.3.4
   cloud_firestore: ^5.4.1
   csv: "6.0.0"
   firebase_auth: ^5.3.1
@@ -40,3 +41,29 @@ flutter:
     - assets/stars.jpg
     - assets/Nexar2.jpg
     - assets/Aevone.jpg
+    - assets/WarpFrame.png
+    - assets/ranks/Intern1.svg
+    - assets/ranks/Intern2.svg
+    - assets/ranks/Intern3.svg
+    - assets/ranks/Navigator1.svg
+    - assets/ranks/Navigator2.svg
+    - assets/ranks/Navigator3.svg
+    - assets/ranks/Explorer1.svg
+    - assets/ranks/Explorer2.svg
+    - assets/ranks/Explorer3.svg
+    - assets/ranks/Pilot1.svg
+    - assets/ranks/Pilot2.svg
+    - assets/ranks/Pilot3.svg
+    - assets/ranks/Scholar1.svg
+    - assets/ranks/Scholar2.svg
+    - assets/ranks/Scholar3.svg
+    - assets/ranks/Voyager1.svg
+    - assets/ranks/Voyager2.svg
+    - assets/ranks/Voyager3.svg
+    - assets/ranks/Pioneer1.svg
+    - assets/ranks/Pioneer2.svg
+    - assets/ranks/Pioneer3.svg
+    - assets/ranks/Legend1.svg
+    - assets/ranks/Legend2.svg
+    - assets/ranks/Legend3.svg
+    
