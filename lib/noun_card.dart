@@ -162,10 +162,10 @@ class NounCard extends StatelessWidget {
               '(N) d$nominativeBestimmtEnding $randomAdjective$nominativeBestimmtAEnding $noun',
               style: TextStyle(fontSize: 16, color: Colors.white),
             ),
-            Text(
-              '(N) ein$nominativeUnbestimmtEnding $randomAdjective$nominativeUnbestimmtAEnding $noun',
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
+            //Text(
+            //  '(N) ein$nominativeUnbestimmtEnding $randomAdjective$nominativeUnbestimmtAEnding $noun',
+            //  style: TextStyle(fontSize: 16, color: Colors.white),
+            //),
             SizedBox(height: 10),
             Text(
               '(D) mit ein$dativeUnbestimmtEnding $randomAdjective$dativeUnbestimmtAEnding $noun',

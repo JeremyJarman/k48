@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
-import 'my_app_state.dart';
 
 class DiamondCard extends StatelessWidget {
   final int score;
@@ -13,15 +10,15 @@ class DiamondCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        width: 150,
-        height: 150,
+        width: 100,
+        height: 100,
         child: Stack(
           alignment: Alignment.center,
           children: [
             Image.asset(
               'assets/WarpFrame.png',
-              width: 150,
-              height: 150,
+              width: 100,
+              height: 100,
               fit: BoxFit.contain,
             ),
             Text(

@@ -40,6 +40,8 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    var screenHeight = MediaQuery.of(context).size.height;
+    var screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       extendBody: true, // Extend the body behind the bottom app bar
@@ -58,9 +60,9 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 80), // Adjust the spacing to account for the app bar
+              SizedBox(height: screenHeight * 0.1), // Adjust the spacing to account for the app bar
               Center(child: DiamondCard(score: appState.score, mana: appState.mana)),
-              SizedBox(height: 10), // Adjust the spacing as needed
+              SizedBox(height: screenHeight * 0.02), // Adjust the spacing as needed
               Center(
                 child: NounCard(
                   noun: appState.nouns[appState.currentIndex]['noun']!,
@@ -68,7 +70,7 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
                   adjectives: appState.adjectives,
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
               Center(
                 child: ElevatedButton(
                   onPressed: () {
@@ -77,7 +79,7 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
                   child: Text('Enter Gate'),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: screenHeight * 0.02),
               Expanded(
                 child: ShaderMask(
                   shaderCallback: (Rect bounds) {
@@ -93,7 +95,7 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
                     controller: _scrollController,
                     physics: FixedExtentScrollPhysics(),
                     diameterRatio: 2.0,
-                    itemExtent: 60.0,
+                    itemExtent: screenHeight * 0.1,
                     onSelectedItemChanged: (index) {
                       appState.selectArticle(appState.articles[index]);
                     },
@@ -103,7 +105,7 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
                         child: Text(
                           article,
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: screenHeight * 0.03,
                             color: appState.selectedArticle == article ? Colors.blue : Colors.white,
                           ),
                         ),
@@ -112,7 +114,7 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
                   ),
                 ),
               ),
-              Spacer(), // Spacer to bring the scroll view closer to the button
+              SizedBox(height: screenHeight * 0.02), // Spacer to bring the scroll view closer to the button
             ],
           ),
         ],
@@ -123,12 +125,12 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
         color: Theme.of(context).primaryColor.withOpacity(0.3), // Set color with 60% transparency
         shape: CircularNotchedRectangle(),
         notchMargin: 8.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0), // Reduced vertical padding
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
                 children: [
                   Icon(Icons.favorite, color: Colors.white, size: 24),
                   SizedBox(width: 5),
@@ -137,30 +139,25 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
                     style: TextStyle(
                       fontSize: 24,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
+              Row(
                 children: [
                   Text(
                     '${appState.correctStreak}',
                     style: TextStyle(
                       fontSize: 24,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(width: 5),
                   Icon(Icons.whatshot, color: Colors.white, size: 24), // Small white flame icon
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
