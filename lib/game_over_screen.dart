@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'main.dart';
 import 'review_screen.dart';
+import 'my_app_state.dart';
+import 'home_page.dart';
 
 class GameOverScreen extends StatelessWidget {
   final int score;
@@ -77,6 +80,14 @@ class GameOverScreen extends StatelessWidget {
                       );
                     },
                     child: Text('Admit Defeat'),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Provider.of<MyAppState>(context, listen: false).resetToLastStar();
+                      Navigator.of(context).pop(); // Go back to the main game screen
+                    },
+                    child: Text('Return to Last Star'),
                   ),
                   SizedBox(height: 50), // Add some space at the bottom
                 ],

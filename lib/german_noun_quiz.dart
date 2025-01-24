@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:csv/csv.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'my_app_state.dart';
 import 'custom_app_bar.dart';
 import 'diamond_card.dart';
@@ -8,9 +12,9 @@ import 'noun_card.dart';
 import 'add_health_button.dart';
 
 class GermanNounQuiz extends StatefulWidget {
-  final String agent;
+  
 
-  GermanNounQuiz({required this.agent});
+  GermanNounQuiz();
 
   @override
   _GermanNounQuizState createState() => _GermanNounQuizState();
@@ -46,7 +50,20 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
     return Scaffold(
       extendBody: true, // Extend the body behind the bottom app bar
       extendBodyBehindAppBar: true, // Extend the body behind the app bar
-      appBar: CustomAppBar(), // Use the custom app bar
+      appBar: AppBar(
+        title: Text('German Noun Quiz'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: () {
+              appState.saveProgress();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Progress saved successfully')),
+              );
+            },
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           Container(
@@ -75,8 +92,18 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
                 child: ElevatedButton(
                   onPressed: () {
                     appState.checkAnswer(context);
+                    appState.checkProgress(context); // Check progress when the button is pressed
                   },
                   child: Text('Enter Gate'),
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.02),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    appState.incrementScoreBy10(context); // Increment score by 10 for testing
+                  },
+                  child: Text('Add 10 Points'),
                 ),
               ),
               SizedBox(height: screenHeight * 0.02),

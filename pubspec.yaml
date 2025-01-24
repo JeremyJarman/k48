@@ -39,6 +39,7 @@ flutter:
     - assets/Adjectives.csv
     - assets/GameOverFrame.svg
     - assets/stars.jpg
+    - assets/Stars.csv
     - assets/Nexar2.jpg
     - assets/Aevone.jpg
     - assets/WarpFrame.png

@@ -41,7 +41,7 @@ class DifficultySelection extends StatelessWidget {
                   Provider.of<MyAppState>(context, listen: false).setDifficulty('Easy');
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GermanNounQuiz(agent: agent)),
+                    MaterialPageRoute(builder: (context) => GermanNounQuiz()),
                   );
                 },
                 child: Text('Easy'),
@@ -52,7 +52,7 @@ class DifficultySelection extends StatelessWidget {
                   Provider.of<MyAppState>(context, listen: false).setDifficulty('Intermediate');
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GermanNounQuiz(agent: agent)),
+                    MaterialPageRoute(builder: (context) => GermanNounQuiz()),
                   );
                 },
                 child: Text('Intermediate'),
@@ -63,7 +63,7 @@ class DifficultySelection extends StatelessWidget {
                   Provider.of<MyAppState>(context, listen: false).setDifficulty('Hardcore');
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => GermanNounQuiz(agent: agent)),
+                    MaterialPageRoute(builder: (context) => GermanNounQuiz()),
                   );
                 },
                 child: Text('Hardcore'),

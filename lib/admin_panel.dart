@@ -32,6 +32,16 @@ class AdminPanel extends StatelessWidget {
               },
               child: Text('Upload Adjectives'),
             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                await Provider.of<MyAppState>(context, listen: false).uploadStarsToFirestore();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Stars uploaded successfully')),
+                );
+              },
+              child: Text('Upload Stars'),
+            ),
           ],
         ),
       ),

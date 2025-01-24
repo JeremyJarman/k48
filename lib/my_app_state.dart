@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -21,13 +22,12 @@ class MyAppState extends ChangeNotifier {
   String difficulty = 'Intermediate';
   int elo = 0; // Replace rating with elo
   String alias = ''; // Add alias variable
-  String lastStar = 'Home'; // Track the last star the user reached
+  int lastStarIndex = 0; // Track the last star the user reached using star name
+  String lastStarName = ''; // Track the last star the user reached using star name
   List<String> _articles = ['der', 'die', 'das']; // Example articles
+  List<String> unlockedDatasets = ['WordLists_01.csv']; // Add unlockedDatasets variable
 
-  List<Map<String, dynamic>> stars = [
-    {'name': 'SRC 1826', 'constellation': 'Pavo', 'distance': 30},
-    // Add more stars here
-  ];
+  List<Map<String, dynamic>> stars = [];
 
   MyAppState() {
     fetchNouns();
@@ -36,6 +36,7 @@ class MyAppState extends ChangeNotifier {
     loadAlias(); // Load alias when the app state is initialized
     fetchHighScore(); // Load high score when the app state is initialized
     loadProgress(); // Load progress when the app state is initialized
+    fetchStars(); // Fetch stars from Firestore
   }
 
   Future<void> fetchNouns() async {
@@ -217,14 +218,7 @@ class MyAppState extends ChangeNotifier {
           elo += 30;
           break;
       }
-      // Check if the user has reached a new star
-      for (var star in stars) {
-        if (score >= star['distance'] && lastStar != star['name']) {
-          lastStar = star['name'];
-          saveProgress();
-          break;
-        }
-      }
+     
       // Move to the next noun only if the answer is correct
       currentIndex = (currentIndex + 1) % nouns.length;
     } else {
@@ -353,9 +347,21 @@ class MyAppState extends ChangeNotifier {
   Future<void> saveProgress() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'lastStar': lastStar,
-      }, SetOptions(merge: true));
+      try {
+        var lastStarData = stars.firstWhere((star) => star['index'] == lastStarIndex, orElse: () => {});
+        String lastStarName = lastStarData != null ? lastStarData['name'] : '';
+
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+          'score': score,
+          'currentIndex': currentIndex,
+          'mana': mana,
+          'lastStarIndex': lastStarIndex,
+          'lastStarName': lastStarName,
+        });
+        print('Progress saved successfully');
+      } catch (e) {
+        print('Error saving progress: $e');
+      }
     }
   }
 
@@ -364,9 +370,54 @@ class MyAppState extends ChangeNotifier {
     if (user != null) {
       final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       if (doc.exists) {
-        lastStar = doc.data()?['lastStar'] ?? 'Home';
+        lastStarIndex = doc.data()?['lastStarIndex'] ?? '0';
+        lastStarName = doc.data()?['lastStarName'] ?? 'Sol';
+        currentIndex = doc.data()?['currentIndex'] ?? 0;
+        score = doc.data()?['score'] ?? 0;
+        mana = doc.data()?['mana'] ?? 0;
         notifyListeners();
       }
+    }
+  }
+
+  Future<void> fetchStars() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance.collection('stars').get();
+      stars = querySnapshot.docs.map((doc) {
+        return {
+          'index': doc.id,
+          'name': doc['name'],
+          'constellation': doc['constellation'],
+          'distance': doc['distance'] is int ? doc['distance'] : int.parse(doc['distance']),
+        };
+      }).toList();
+      notifyListeners();
+      print('Stars fetched successfully');
+    } catch (e) {
+      print('Error fetching stars: $e');
+    }
+  }
+
+  Future<void> uploadStarsToFirestore() async {
+    try {
+      final rawData = await rootBundle.loadString('assets/Stars.csv');
+      List<List<dynamic>> rowsAsListOfValues = const CsvToListConverter().convert(rawData);
+
+      for (var row in rowsAsListOfValues.skip(0)) { // Skip header row
+        String starIndex = row[0].toString();
+        String starName = row[1];
+        String constellation = row[2];
+        int distance = row[3];
+
+        await FirebaseFirestore.instance.collection('stars').doc(starIndex).set({
+          'name': starName,
+          'constellation': constellation,
+          'distance': distance,
+        });
+      }
+      print('Stars uploaded successfully');
+    } catch (e) {
+      print('Error uploading stars: $e');
     }
   }
 
@@ -478,4 +529,73 @@ class MyAppState extends ChangeNotifier {
   }
 
   List<String> get articles => _articles;
+
+  void checkProgress(BuildContext context) {
+    for (var star in stars) {
+      if (score == star['distance']) {
+        lastStarIndex = star['index'];
+        saveProgress();
+        showCongratulationsDialog(context, star['name']);
+        break;
+      }
+    }
+  }
+
+  void updateLastStarInDatabase() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+          'lastStar': lastStarName,
+        });
+        print('Last star updated successfully');
+      } catch (e) {
+        print('Error updating last star: $e');
+      }
+    }
+  }
+
+  void showCongratulationsDialog(BuildContext context, String starName) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Congratulations!'),
+          content: Text('You have reached the star: $starName!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void resetToLastStar() {
+    var lastStarData = stars.firstWhere((star) => star['index'] == lastStarIndex, orElse: () => {});
+    if (lastStarData != null) {
+      currentIndex = lastStarData['distance'];
+      score = lastStarData['distance'];
+      notifyListeners();
+    }
+  }
+
+  void incrementScoreBy10(BuildContext context) {
+    score += 10;
+    currentIndex += 10;
+    mana += 10; // Example increment for mana
+    checkProgress(context);
+    notifyListeners();
+  }
+
+  void unlockDataset(String dataset) {
+    if (!unlockedDatasets.contains(dataset)) {
+      unlockedDatasets.add(dataset);
+      notifyListeners();
+    }
+  }
 }
