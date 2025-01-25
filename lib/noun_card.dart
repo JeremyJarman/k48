@@ -4,15 +4,11 @@ import 'dart:math';
 class NounCard extends StatelessWidget {
   final String noun;
   final String? selectedArticle;
-  final List<Map<String, dynamic>> adjectives;
+  final String? adjective;
 
-  NounCard({required this.noun, required this.selectedArticle, required this.adjectives});
+  NounCard({required this.noun, required this.selectedArticle, required this.adjective});
 
-  String getRandomAdjective() {
-    final random = Random();
-    final adjective = adjectives[random.nextInt(adjectives.length)];
-    return adjective['adjective'];
-  }
+
 
   String getBestimmtEnding(String article, String caseType) {
     switch (caseType) {
@@ -126,7 +122,7 @@ class NounCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final randomAdjective = getRandomAdjective();
+    final randomAdjective = adjective;
     final nominativeBestimmtEnding = getBestimmtEnding(selectedArticle ?? '', 'N');
     final dativeBestimmtEnding = getBestimmtEnding(selectedArticle ?? '', 'D');
     final accusativeBestimmtEnding = getBestimmtEnding(selectedArticle ?? '', 'A');

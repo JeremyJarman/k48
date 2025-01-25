@@ -80,13 +80,13 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
               SizedBox(height: screenHeight * 0.1), // Adjust the spacing to account for the app bar
               Center(child: DiamondCard(score: appState.score, mana: appState.mana)),
               SizedBox(height: screenHeight * 0.02), // Adjust the spacing as needed
-              Center(
-                child: NounCard(
-                  noun: appState.nouns[appState.currentIndex]['noun']!,
-                  selectedArticle: appState.selectedArticle,
-                  adjectives: appState.adjectives,
-                ),
-              ),
+             // Center(
+             //   child: NounCard(
+             //     noun: appState.nouns[appState.currentIndex]['noun']!,
+             //     selectedArticle: appState.selectedArticle,
+             //     adjectives: appState.adjectives,
+             //   ),
+             // ),
               SizedBox(height: screenHeight * 0.02),
               Center(
                 child: ElevatedButton(
