@@ -100,14 +100,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: Stack(
           children: [
-            Positioned(
-              top: 10,
-              left: 10,
-              child: Text(
-                'Nearest Star: ${appState.getDistanceToNearestStar()} ly',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
-            ),
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -129,22 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
-                  DropdownButton<String>(
-                    value: selectedValue,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedValue = newValue!;
-                      });
-                    },
-                    items: <String>['Option 1', 'Option 2', 'Option 3', 'Option 4']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                  SizedBox(height: 20),
+                 SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -152,8 +129,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         MaterialPageRoute(builder: (context) => DifficultySelection(agent: 'Aevone')),
                       );
                     },
-                    child: Text('Solo mission'),
+                    child: Text('Artikels'),
                   ),
+                  SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -163,13 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     child: Text('Wortschatz'),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // TODO: Implement Artikels page
-                    },
-                    child: Text('Artikels'),
-                  ),
-                ],
+                 ],
               ),
             ),
           ],

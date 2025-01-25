@@ -17,6 +17,8 @@ dependencies:
   cloud_firestore: ^5.4.1
   csv: "6.0.0"
   firebase_auth: ^5.3.1
+  vibration: ^1.7.4 # Add the vibration package
+  shared_preferences: ^2.0.13
  
 
 dev_dependencies:

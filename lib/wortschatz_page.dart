@@ -1,7 +1,46 @@
 import 'package:flutter/material.dart';
 import 'gameplay_screen.dart';
+import 'dataset_service.dart';
 
-class WortschatzPage extends StatelessWidget {
+class WortschatzPage extends StatefulWidget {
+  @override
+  _WortschatzPageState createState() => _WortschatzPageState();
+}
+
+class _WortschatzPageState extends State<WortschatzPage> {
+  List<String> _unlockedDatasets = [];
+  Map<String, int> _datasetScores = {};
+  final DatasetService _datasetService = DatasetService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUnlockedDatasets();
+  }
+
+  Future<void> _loadUnlockedDatasets() async {
+    final unlockedDatasets = await _datasetService.getUnlockedDatasets();
+    final datasetScores = await _datasetService.getDatasetScores();
+    print('Unlocked Datasets: $unlockedDatasets'); // Debugging statement
+    print('Dataset Scores: $datasetScores'); // Debugging statement
+    setState(() {
+      _unlockedDatasets = unlockedDatasets;
+      _datasetScores = datasetScores;
+    });
+  }
+
+  void _onDatasetCompleted(String dataset, int score) async {
+    await _datasetService.markDatasetAsCompleted(dataset, score);
+    final unlockedDatasets = await _datasetService.getUnlockedDatasets();
+    final datasetScores = await _datasetService.getDatasetScores();
+    print('Unlocked Datasets after completion: $unlockedDatasets'); // Debugging statement
+    print('Dataset Scores after completion: $datasetScores'); // Debugging statement
+    setState(() {
+      _unlockedDatasets = unlockedDatasets;
+      _datasetScores = datasetScores;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,42 +58,38 @@ class WortschatzPage extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/galaxy.jpg'), // Use the same background image as the home page
+                image: AssetImage('assets/galaxy.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          ListView(
-            padding: EdgeInsets.only(top: kToolbarHeight + 20), // Add spacing between the top app bar and the first option
-            children: [
-              ListTile(
-                title: Text('01. Menschen', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => GameplayScreen(dataset: 'WordLists_01.csv', title: 'Menschen')),
-                  );
-                },
-              ),
-              ListTile(
-                title: Text('02. Stationen im Leben', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  // TODO: Unlock and navigate to this dataset
-                },
-              ),
-              ListTile(
-                title: Text('03. Wohnen', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  // TODO: Unlock and navigate to this dataset
-                },
-              ),
-              ListTile(
-                title: Text('04. Freizeit und Kultur', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  // TODO: Unlock and navigate to this dataset
-                },
-              ),
-            ],
+          ListView.builder(
+            itemCount: _datasetService.allDatasets.length,
+            itemBuilder: (context, index) {
+              final dataset = _datasetService.allDatasets[index];
+              final isUnlocked = _unlockedDatasets.contains(dataset['filename']);
+              final score = _datasetScores[dataset['filename']] ?? 0;
+              return ListTile(
+                title: Text(
+                  '${index + 1}. ${dataset['title']} - ${score}%',
+                  style: TextStyle(color: isUnlocked ? Colors.white : Colors.grey),
+                ),
+                onTap: isUnlocked
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => GameplayScreen(
+                              dataset: dataset['filename']!,
+                              title: dataset['title']!,
+                              onDatasetCompleted: (score) => _onDatasetCompleted(dataset['filename']!, score),
+                            ),
+                          ),
+                        );
+                      }
+                    : null,
+              );
+            },
           ),
         ],
       ),

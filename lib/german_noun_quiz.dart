@@ -12,7 +12,7 @@ import 'noun_card.dart';
 import 'add_health_button.dart';
 
 class GermanNounQuiz extends StatefulWidget {
-  
+  int _mana = 0; // Track the mana points
 
   GermanNounQuiz();
 
@@ -147,7 +147,10 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: AddHealthButton(), // Heart icon button
+      //floatingActionButton: AddHealthButton(
+      //  mana: _mana,
+      //  onPressed: _addHealth,
+      //  ), // Heart icon button
       bottomNavigationBar: BottomAppBar(
         color: Theme.of(context).primaryColor.withOpacity(0.3), // Set color with 60% transparency
         shape: CircularNotchedRectangle(),
