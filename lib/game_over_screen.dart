@@ -84,7 +84,7 @@ class GameOverScreen extends StatelessWidget {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      Provider.of<MyAppState>(context, listen: false).resetToLastStar();
+                      //Provider.of<MyAppState>(context, listen: false).resetToLastStar();
                       Navigator.of(context).pop(); // Go back to the main game screen
                     },
                     child: Text('Return to Last Star'),

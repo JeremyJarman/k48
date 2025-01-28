@@ -15,7 +15,7 @@ class AdminPanel extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () async {
-                await Provider.of<MyAppState>(context, listen: false).loadNounsFromAssets();
+                //await Provider.of<MyAppState>(context, listen: false).loadNounsFromAssets();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Nouns uploaded successfully')),
                 );
@@ -25,7 +25,7 @@ class AdminPanel extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                await Provider.of<MyAppState>(context, listen: false).loadAdjectivesFromAssets();
+                //await Provider.of<MyAppState>(context, listen: false).loadAdjectivesFromAssets();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Adjectives uploaded successfully')),
                 );
@@ -35,7 +35,7 @@ class AdminPanel extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                await Provider.of<MyAppState>(context, listen: false).uploadStarsToFirestore();
+                //await Provider.of<MyAppState>(context, listen: false).uploadStarsToFirestore();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Stars uploaded successfully')),
                 );

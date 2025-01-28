@@ -38,7 +38,7 @@ class DifficultySelection extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Provider.of<MyAppState>(context, listen: false).setDifficulty('Easy');
+                  //Provider.of<MyAppState>(context, listen: false).setDifficulty('Easy');
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => GermanNounQuiz()),
@@ -49,7 +49,7 @@ class DifficultySelection extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Provider.of<MyAppState>(context, listen: false).setDifficulty('Intermediate');
+                  //Provider.of<MyAppState>(context, listen: false).setDifficulty('Intermediate');
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => GermanNounQuiz()),
@@ -60,7 +60,7 @@ class DifficultySelection extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Provider.of<MyAppState>(context, listen: false).setDifficulty('Hardcore');
+                  //Provider.of<MyAppState>(context, listen: false).setDifficulty('Hardcore');
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => GermanNounQuiz()),

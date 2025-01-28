@@ -56,7 +56,7 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
           IconButton(
             icon: Icon(Icons.save),
             onPressed: () {
-              appState.saveProgress();
+              //appState.saveProgress();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Progress saved successfully')),
               );
@@ -78,7 +78,7 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: screenHeight * 0.1), // Adjust the spacing to account for the app bar
-              Center(child: DiamondCard(score: appState.score, mana: appState.mana)),
+              //Center(child: DiamondCard(score: appState.score, mana: appState.mana)),
               SizedBox(height: screenHeight * 0.02), // Adjust the spacing as needed
              // Center(
              //   child: NounCard(
@@ -91,8 +91,8 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    appState.checkAnswer(context);
-                    appState.checkProgress(context); // Check progress when the button is pressed
+                    //appState.checkAnswer(context);
+                    //appState.checkProgress(context); // Check progress when the button is pressed
                   },
                   child: Text('Enter Gate'),
                 ),
@@ -101,7 +101,7 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    appState.incrementScoreBy10(context); // Increment score by 10 for testing
+                    //appState.incrementScoreBy10(context); // Increment score by 10 for testing
                   },
                   child: Text('Add 10 Points'),
                 ),
@@ -118,27 +118,6 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
                     ).createShader(bounds);
                   },
                   blendMode: BlendMode.dstIn,
-                  child: ListWheelScrollView(
-                    controller: _scrollController,
-                    physics: FixedExtentScrollPhysics(),
-                    diameterRatio: 2.0,
-                    itemExtent: screenHeight * 0.1,
-                    onSelectedItemChanged: (index) {
-                      appState.selectArticle(appState.articles[index]);
-                    },
-                    children: appState.articles.map((article) {
-                      return Container(
-                        alignment: Alignment.center,
-                        child: Text(
-                          article,
-                          style: TextStyle(
-                            fontSize: screenHeight * 0.03,
-                            color: appState.selectedArticle == article ? Colors.blue : Colors.white,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
                 ),
               ),
               SizedBox(height: screenHeight * 0.02), // Spacer to bring the scroll view closer to the button
@@ -175,13 +154,13 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
               ),
               Row(
                 children: [
-                  Text(
-                    '${appState.correctStreak}',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.white,
-                    ),
-                  ),
+                  //Text(
+                  //  '${appState.correctStreak}',
+                  //  style: TextStyle(
+                  //    fontSize: 24,
+                  //    color: Colors.white,
+                  //  ),
+                  //),
                   SizedBox(width: 5),
                   Icon(Icons.whatshot, color: Colors.white, size: 24), // Small white flame icon
                 ],

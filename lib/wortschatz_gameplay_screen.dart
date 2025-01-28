@@ -1,74 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:math';
-import 'csv_loader.dart';
 import 'my_app_state.dart';
-import 'add_health_button.dart';
-import 'noun_card.dart'; // Import the NounCard widget
-import 'package:vibration/vibration.dart'; // Import vibration package
-import 'end_screen.dart'; // Import the end screen
 import 'dataset_service.dart';
+import 'end_screen.dart';
+import 'add_health_button.dart';
 
-class ArticlesGameplayScreen extends StatefulWidget {
+class WortschatzGameplayScreen extends StatefulWidget {
   final String dataset;
-  final String title; // Add title property
-  final Function(int) onDatasetCompleted;
+  final String title;
+  final void Function(int) onDatasetCompleted;
 
-  ArticlesGameplayScreen({required this.dataset, required this.title, required this.onDatasetCompleted});
+  WortschatzGameplayScreen({
+    required this.dataset,
+    required this.onDatasetCompleted, 
+    required this.title,
+    
+  });
 
   @override
-  _ArticlesGameplayScreenState createState() => _ArticlesGameplayScreenState();
+  _WortschatzGameplayScreenState createState() => _WortschatzGameplayScreenState();
 }
 
-class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with SingleTickerProviderStateMixin {
-  List<int> _wrongAnswerIndices = [];
+class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> with SingleTickerProviderStateMixin {
   List<List<dynamic>> _data = [];
-  List<String> _articles = ['der', 'die', 'das']; // Example articles
-  List<String> _adjectives = []; // Add adjectives list
   int _currentIndex = 0;
-  int _correctAnswers = 0;
   int _healthPoints = 100;
-  int _mana = 0;
   int _correctStreak = 0;
+  int _correctAnswers = 0;
+  int _mana = 0;
+  List<int> _wrongAnswerIndices = [];
+  final List<String> _letters = ['A', 'B', 'C', 'D', 'E'];
   bool _showTranslations = false;
   bool _showRedFlash = false;
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
-  late FixedExtentScrollController _scrollController;
-  int _selectedArticleIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _loadData();
-    _loadAdjectives();
     _controller = AnimationController(
       duration: const Duration(milliseconds: 100),
       vsync: this,
     );
     _offsetAnimation = Tween<Offset>(
       begin: Offset.zero,
-      end: const Offset(0.1, 0.0),
+      end: Offset(0.1, 0.0),
     ).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.elasticIn,
     ));
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _controller.reverse();
-      } else if (status == AnimationStatus.dismissed) {
-        setState(() {
-          _showRedFlash = false;
-        });
-      }
-    });
-    _scrollController = FixedExtentScrollController();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -76,13 +62,6 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
     final datasetService = Provider.of<DatasetService>(context, listen: false);
     _data = await datasetService.loadCsv('assets/${widget.dataset}');
     _data.shuffle();
-    setState(() {});
-  }
-
-  Future<void> _loadAdjectives() async {
-    final datasetService = Provider.of<DatasetService>(context, listen: false);
-    final adjectivesData = await datasetService.loadCsv('assets/adjectives.csv');
-    _adjectives = adjectivesData.map((row) => row[0].toString()).toList();
     setState(() {});
   }
 
@@ -106,12 +85,12 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
       _healthPoints = (_healthPoints - 10).clamp(0, 100);
       _mana = 0;
       _wrongAnswerIndices.add(_currentIndex);
-      _showRedFlash = true;
-      _controller.forward(from: 0);
       if (_healthPoints <= 0) {
         _endGame(false);
       } else {
-        setState(() {});
+        setState(() {
+          _currentIndex++;
+        });
       }
     }
   }
@@ -131,7 +110,7 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
           correctAnswers: _correctAnswers,
           wrongAnswerIndices: _wrongAnswerIndices,
           data: _data,
-          isArticleReview: true,
+          isArticleReview: false,
           eloChange: eloChange,
           datasetName: widget.dataset,
         ),
@@ -139,13 +118,13 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
     );
   }
 
-
- void _addHealth() {
+  void _addHealth() {
     setState(() {
       _healthPoints = (_healthPoints + 50).clamp(0, 100);
       _mana = 0;
     });
   }
+
   void _addScoreAndAdvance() async {
     _correctStreak += 10;
     _currentIndex = (_currentIndex + 10).clamp(0, _data.length - 1);
@@ -164,15 +143,10 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
 
   @override
   Widget build(BuildContext context) {
-    if (_data.isEmpty || _adjectives.isEmpty) {
+    if (_data.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
-          title: Text(
-            widget.title,
-            style: TextStyle(color: Colors.white),
-          ),
-          iconTheme: IconThemeData(color: Colors.white), // Set back arrow color to white
+          title: Text(widget.title),
         ),
         body: Center(
           child: CircularProgressIndicator(),
@@ -181,39 +155,52 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
     }
 
     final currentWord = _data[_currentIndex];
-    final noun = currentWord[2]; // Assuming the noun is in the first column
-    final selectedArticle = _articles[_selectedArticleIndex]; // Get the currently selected article
-    final randomAdjective = _adjectives[Random().nextInt(_adjectives.length)]; // Get a random adjective
-    final remainingNouns = _data.length - _currentIndex; // Calculate remaining nouns
+    final wordType = currentWord[0];
+    final prefix = currentWord[1];
+    final word = currentWord[2];
+    final suffix = currentWord[3];
+    final correctDefinition = currentWord[5];
+    final correctTranslation = currentWord[4];
+    final example = currentWord[6];
+    final remainingWords = _data.length - _currentIndex;
+
+    final sameTypeWords = _data.where((item) => item[0] == wordType && item != currentWord).toList();
+    sameTypeWords.shuffle();
+    final options = sameTypeWords.take(4).map((item) => _showTranslations ? item[4] : item[5]).toList();
+
+    if (options.length < 4) {
+      final remainingOptions = _data.where((item) => item != currentWord).toList();
+      remainingOptions.shuffle();
+      options.addAll(remainingOptions.take(4 - options.length).map((item) => _showTranslations ? item[4] : item[5]));
+    }
+
+    options.add(_showTranslations ? correctTranslation : correctDefinition);
+    options.shuffle();
 
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
-        title: Text(
-          widget.title,
-          style: TextStyle(color: Colors.white),
-        ),
-        iconTheme: IconThemeData(color: Colors.white), // Set back arrow color to white
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Icon(Icons.list, color: Colors.white),
-                SizedBox(width: 5),
-                Text(
-                  '$remainingNouns',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
+        title: Row(
+          children: [
+            Text(
+              widget.title,
+              style: TextStyle(color: Colors.white),
             ),
-          ),
-        ],
+            Spacer(),
+            Icon(Icons.list, color: Colors.white),
+            SizedBox(width: 5),
+            Text(
+              '$remainingWords',
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Stack(
         children: [
@@ -232,52 +219,55 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
           SlideTransition(
             position: _offsetAnimation,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-                Center(
-                  child: IntrinsicWidth(
-                    child: NounCard(
-                      noun: noun,
-                      selectedArticle: selectedArticle, // Pass the selected article to the NounCard
-                      adjective: randomAdjective, // Pass the random adjective to the NounCard
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Card(
+                    color: Theme.of(context).primaryColor.withOpacity(0.3),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            wordType,
+                            style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.white),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            suffix.isNotEmpty ? '$prefix $word ($suffix)' : '$prefix $word',
+                            style: TextStyle(fontSize: 26, color: Colors.white),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            example,
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ListWheelScrollView(
-                      controller: _scrollController,
-                      itemExtent: 100,
-                      physics: FixedExtentScrollPhysics(),
-                      diameterRatio: 1.5,
-                      onSelectedItemChanged: (index) {
-                        setState(() {
-                          _selectedArticleIndex = index;
-                        });
-                      },
-                      children: _articles.map((article) {
-                        final isSelected = _articles[_selectedArticleIndex] == article;
-                        return GestureDetector(
-                          onTap: () => _onAnswerSelected(article == currentWord[1]),
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.5) : Colors.transparent, // Highlight selected option
-                              borderRadius: BorderRadius.circular(10),
+                    child: ListView.builder(
+                      itemCount: options.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          color: Theme.of(context).primaryColor.withOpacity(0.3),
+                          child: ListTile(
+                            leading: Text(
+                              _letters[index],
+                              style: TextStyle(color: Colors.white, fontSize: 20),
                             ),
-                            child: Text(
-                              article,
-                              style: TextStyle(
-                                fontSize: 24,
-                                color: isSelected ? Colors.white : Colors.black,
-                              ),
-                            ),
+                            title: Text(options[index], style: TextStyle(color: Colors.white)),
+                            onTap: () => _onAnswerSelected(options[index] == (_showTranslations ? correctTranslation : correctDefinition)),
                           ),
                         );
-                      }).toList(),
+                      },
                     ),
                   ),
                 ),
@@ -287,7 +277,7 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
         ],
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Theme.of(context).primaryColor.withOpacity(0.6),
+        color: Theme.of(context).primaryColor.withOpacity(0.3),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
           child: Row(
@@ -302,21 +292,21 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
                     style: TextStyle(
                       fontSize: 24,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
               AddHealthButton(
-                mana: _mana,
-                onPressed: _addHealth,
+                mana: _mana, 
+                onPressed: _addHealth
               ),
               FloatingActionButton(
                 onPressed: _addScoreAndAdvance,
                 child: Icon(Icons.arrow_forward),
               ),
               IconButton(
-                icon: Icon(_showTranslations ? Icons.translate : Icons.text_fields, color: Colors.white),
+                icon: Icon(_showTranslations ? Icons.translate : Icons.text_fields, 
+                color: Colors.white),
                 onPressed: _toggleTranslations,
               ),
               Row(
@@ -326,7 +316,6 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
                     style: TextStyle(
                       fontSize: 24,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(width: 5),

@@ -93,60 +93,55 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Container(
+        height: screenHeight,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/galaxy.jpg'),
             fit: BoxFit.cover,
           ),
         ),
-        child: Stack(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Welcome to k48!',
-                    style: TextStyle(fontSize: 26, color: Colors.white), // Set text color to white for better contrast
-                    textAlign: TextAlign.center, // Center the text
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    height: screenHeight * 0.5, // Limit the height to half the screen height
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Text(
-                        description,
-                        style: TextStyle(fontSize: 16, color: Colors.white), // Set text color to white for better contrast
-                        textAlign: TextAlign.center, // Center the text
-                      ),
-                    ),
-                  ),
-                 SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        //MaterialPageRoute(builder: (context) => DifficultySelection(agent: 'Aevone')),
-                        MaterialPageRoute(builder: (context) => ArticlesPage()),
-                      );
-                    },
-                    child: Text('Artikels'),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => WortschatzPage()),
-                      );
-                    },
-                    child: Text('Wortschatz'),
-                  ),
-                 ],
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Welcome to k48!',
+                style: TextStyle(fontSize: 24, color: Colors.white),
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              Container(
+                height: screenHeight * 0.3, // Relative height
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: SingleChildScrollView(
+                  child: Text(
+                    description,
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+             SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ArticlesPage()),
+                  );
+                },
+                child: Text('Artikel'),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WortschatzPage()),
+                  );
+                },
+                child: Text('Wortschatz'),
+              ),
+            ],
+          ),
         ),
       ),
     );

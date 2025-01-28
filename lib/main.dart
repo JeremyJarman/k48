@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'login_page.dart'; // Import the login page
-import 'my_app_state.dart'; // Import the MyAppState
-import 'german_noun_quiz.dart';
 import 'signup_page.dart';
 import 'splash_screen.dart';
 import 'home_page.dart'; // Import the extracted home page
 import 'auth_wrapper.dart'; // Import the auth wrapper
+import 'dataset_service.dart';
+import 'wortschatz_page.dart';
+import 'my_app_state.dart'; // Import MyAppState
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,8 +17,12 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform, // Ensure this line is present
   );
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MyAppState()), // Add MyAppState provider
+        ChangeNotifierProvider(create: (_) => DatasetService()), // Use Provider instead of ChangeNotifierProvider
+        
+      ],
       child: MyApp(),
     ),
   );
@@ -30,11 +34,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'German Nouns App',
+      title: 'k48',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: AuthWrapper(), // Use the auth wrapper
+      initialRoute: '/',
+      routes: {
+        '/': (context) => SplashScreen(),
+        '/login': (context) => LoginPage(),
+        '/signup': (context) => SignupPage(),
+        '/home': (context) => MyHomePage(),
+        '/wortschatz': (context) => WortschatzPage(),
+        '/auth': (context) => AuthWrapper(),
+      },
     );
   }
 }

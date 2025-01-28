@@ -1,124 +1,121 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'csv_loader.dart';
+import 'dart:math';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class DatasetService {
-  static const String _completedDatasetsKey = 'completed_datasets';
-  static const String _completedArticleDatasetsKey = 'completed_article_datasets';
-  static const String _datasetScoresKey = 'dataset_scores';
-  static const String _articleDatasetScoresKey = 'article_dataset_scores';
+class DatasetService extends ChangeNotifier {
+  List<Map<String, dynamic>> allWortschatzDatasets = [
+    {'filename': 'WordLists_01.csv', 'title': 'Menschen', 'elo': 1000},
+    {'filename': 'WordLists_02.csv', 'title': 'Station im Leben', 'elo': 1050},
+    {'filename': 'WordLists_03.csv', 'title': 'Wohnen', 'elo': 1100},
+    {'filename': 'WordLists_04.csv', 'title': 'Freizeit und Kultur', 'elo': 1100},
+  ]; // Example datasets
 
-  // List all wortschatz datasets here with their corresponding CSV filenames and titles
-  final List<Map<String, String>> allDatasets = [
-    {'filename': 'WordLists_01.csv', 'title': 'Menschen'},
-    {'filename': 'WordLists_02.csv', 'title': 'Stationen im Leben'},
-    {'filename': 'WordLists_03.csv', 'title': 'Wohnen'},
-    {'filename': 'WordLists_04.csv', 'title': 'Freizeit und Kultur'},
-    // Add more datasets as needed
-  ];
+  List<Map<String, dynamic>> allArticleDatasets = [
+    {'filename': 'd1.csv', 'title': 'Top 100', 'elo': 1100},
+    {'filename': 'd2.csv', 'title': '101 - 200', 'elo': 1200},
+    {'filename': 'd3.csv', 'title': '201 - 300', 'elo': 1300}, 
+    {'filename': 'd4.csv', 'title': '301 - 400', 'elo': 1400},
+    {'filename': 'd5.csv', 'title': '401 - 500', 'elo': 1500},
+    {'filename': 'd6.csv', 'title': '501 - 600', 'elo': 1600}, 
+  ]; // Example datasets
 
-  // List all article datasets here with their corresponding CSV filenames and titles
-  final List<Map<String, String>> allArticleDatasets = [
-    {'filename': 'd1.csv', 'title': 'Top 100'},
-    {'filename': 'd2.csv', 'title': '200 - 300'},
-    {'filename': 'd3.csv', 'title': '300 - 400'},
-    // Add more datasets as needed
-  ];
+  List<String> unlockedWortschatzDatasets = [];
+  List<String> unlockedArticleDatasets = [];
 
-  Future<List<String>> getUnlockedDatasets() async {
-    final prefs = await SharedPreferences.getInstance();
-    final completedDatasets = prefs.getStringList(_completedDatasetsKey) ?? [];
+  Map<String, double> datasetScores = {};
 
-    // Unlock the first dataset by default
-    if (completedDatasets.isEmpty) {
-      return [allDatasets.first['filename']!];
+  DatasetService() {
+    _initializeDefaults();
+    _loadState();
+  }
+
+  void _initializeDefaults() {
+    if (allWortschatzDatasets.isNotEmpty) {
+      unlockedWortschatzDatasets = [allWortschatzDatasets.first['filename']];
     }
+    if (allArticleDatasets.isNotEmpty) {
+      unlockedArticleDatasets = [allArticleDatasets.first['filename']];
+    }
+  }
 
-    // Unlock the next dataset if the previous one is completed
-    final unlockedDatasets = <String>[];
-    for (var dataset in allDatasets) {
-      unlockedDatasets.add(dataset['filename']!);
-      if (!completedDatasets.contains(dataset['filename'])) {
-        break;
+  Future<void> _loadState() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        final data = doc.data()!;
+        unlockedWortschatzDatasets = List<String>.from(data['unlockedDatasets'] ?? [allWortschatzDatasets.first['filename']]);
+        unlockedArticleDatasets = List<String>.from(data['unlockedArticleDatasets'] ?? [allArticleDatasets.first['filename']]);
+        datasetScores = Map<String, double>.from(data['datasetPassPercentages'] ?? {});
+        notifyListeners();
       }
     }
-
-    return unlockedDatasets;
   }
 
-  Future<List<String>> getUnlockedArticleDatasets() async {
-    final prefs = await SharedPreferences.getInstance();
-    final completedDatasets = prefs.getStringList(_completedArticleDatasetsKey) ?? [];
-
-    // Unlock the first dataset by default
-    if (completedDatasets.isEmpty) {
-      return [allArticleDatasets.first['filename']!];
+  Future<void> _saveState() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'unlockedDatasets': unlockedWortschatzDatasets,
+        'unlockedArticleDatasets': unlockedArticleDatasets,
+        'datasetPassPercentages': datasetScores,
+      }, SetOptions(merge: true));
     }
+  }
 
-    // Unlock the next dataset if the previous one is completed
-    final unlockedDatasets = <String>[];
-    for (var dataset in allArticleDatasets) {
-      unlockedDatasets.add(dataset['filename']!);
-      if (!completedDatasets.contains(dataset['filename'])) {
-        break;
+  bool isDatasetUnlocked(String dataset, bool isArticle) {
+    return isArticle ? unlockedArticleDatasets.contains(dataset) : unlockedWortschatzDatasets.contains(dataset);
+  }
+
+  void unlockDataset(String dataset, bool isArticle) {
+    if (isArticle) {
+      if (!unlockedArticleDatasets.contains(dataset)) {
+        unlockedArticleDatasets.add(dataset);
+      }
+    } else {
+      if (!unlockedWortschatzDatasets.contains(dataset)) {
+        unlockedWortschatzDatasets.add(dataset);
       }
     }
-
-    return unlockedDatasets;
+    _saveState();
+    notifyListeners();
   }
 
-  Future<void> markDatasetAsCompleted(String dataset, int score) async {
-    final prefs = await SharedPreferences.getInstance();
-    final completedDatasets = prefs.getStringList(_completedDatasetsKey) ?? [];
-    final datasetScores = prefs.getStringList(_datasetScoresKey) ?? [];
-
-    if (!completedDatasets.contains(dataset)) {
-      completedDatasets.add(dataset);
+  void unlockNextDataset(bool isArticle) {
+    if (isArticle) {
+      final nextDatasetIndex = unlockedArticleDatasets.length;
+      if (nextDatasetIndex < allArticleDatasets.length) {
+        unlockedArticleDatasets.add(allArticleDatasets[nextDatasetIndex]['filename']);
+        print('Unlocked next article dataset: ${allArticleDatasets[nextDatasetIndex]['filename']}'); // Debugging statement
+      }
+    } else {
+      final nextDatasetIndex = unlockedWortschatzDatasets.length;
+      if (nextDatasetIndex < allWortschatzDatasets.length) {
+        unlockedWortschatzDatasets.add(allWortschatzDatasets[nextDatasetIndex]['filename']);
+        print('Unlocked next wortschatz dataset: ${allWortschatzDatasets[nextDatasetIndex]['filename']}'); // Debugging statement
+      }
     }
-
-    // Remove any existing score for this dataset
-    datasetScores.removeWhere((element) => element.startsWith('$dataset:'));
-    // Add the new score
-    datasetScores.add('$dataset:$score');
-
-    await prefs.setStringList(_completedDatasetsKey, completedDatasets);
-    await prefs.setStringList(_datasetScoresKey, datasetScores);
+    _saveState();
+    notifyListeners();
   }
 
-  Future<void> markArticleDatasetAsCompleted(String dataset, int score) async {
-    final prefs = await SharedPreferences.getInstance();
-    final completedDatasets = prefs.getStringList(_completedArticleDatasetsKey) ?? [];
-    final datasetScores = prefs.getStringList(_articleDatasetScoresKey) ?? [];
-
-    if (!completedDatasets.contains(dataset)) {
-      completedDatasets.add(dataset);
-    }
-
-    // Remove any existing score for this dataset
-    datasetScores.removeWhere((element) => element.startsWith('$dataset:'));
-    // Add the new score
-    datasetScores.add('$dataset:$score');
-
-    await prefs.setStringList(_completedArticleDatasetsKey, completedDatasets);
-    await prefs.setStringList(_articleDatasetScoresKey, datasetScores);
+  void updateDatasetScore(String dataset, double score) {
+    datasetScores[dataset] = score;
+    _saveState();
+    notifyListeners();
   }
 
-  Future<Map<String, int>> getDatasetScores() async {
-    final prefs = await SharedPreferences.getInstance();
-    final datasetScores = prefs.getStringList(_datasetScoresKey) ?? [];
-    return Map.fromIterable(
-      datasetScores,
-      key: (e) => e.split(':')[0],
-      value: (e) => int.parse(e.split(':')[1]),
-    );
+  double getDatasetScore(String dataset) {
+    return datasetScores[dataset] ?? 0.0;
   }
 
-  Future<Map<String, int>> getArticleDatasetScores() async {
-    final prefs = await SharedPreferences.getInstance();
-    final datasetScores = prefs.getStringList(_articleDatasetScoresKey) ?? [];
-    return Map.fromIterable(
-      datasetScores,
-      key: (e) => e.split(':')[0],
-      value: (e) => int.parse(e.split(':')[1]),
-    );
+  Future<List<List<dynamic>>> loadCsv(String path) async {
+    final data = await rootBundle.loadString(path);
+    List<List<dynamic>> csvTable = const CsvToListConverter().convert(data);
+    return csvTable;
   }
 }

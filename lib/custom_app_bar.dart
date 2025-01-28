@@ -24,19 +24,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       title: Center(
-        child: Text(
-          appState.difficulty,
-          style: TextStyle(color: Colors.white, fontSize: 20),
-        ),
+        //child: Text(
+          //appState.difficulty,
+          //style: TextStyle(color: Colors.white, fontSize: 20),
+       // ),
       ),
       actions: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Center(
-            child: Text(
-              'Best: ${appState.highScore}',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
+            //child: Text(
+             // 'Best: ${appState.highScore}',
+             // style: TextStyle(color: Colors.white, fontSize: 16),
+            //),
           ),
         ),
       ],

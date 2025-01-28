@@ -140,9 +140,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> with SingleTickerProv
                     }
                     var userData = userSnapshot.data!.data() as Map<String, dynamic>;
                     var elo = userData['elo'] ?? 0;
-                    var rank = MyAppState().getRankFromElo(elo);
-                    var level = MyAppState().getLevelFromElo(elo);
-                    var rankBadge = getRankBadge(rank, level);
+                    //var rank = MyAppState().getRankFromElo(elo);
+                    //var level = MyAppState().getLevelFromElo(elo);
+                    //var rankBadge = getRankBadge(rank, level);
 
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -151,11 +151,11 @@ class _LeaderboardPageState extends State<LeaderboardPage> with SingleTickerProv
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            SvgPicture.asset(
-                              rankBadge,
-                              width: 30,
-                              height: 30,
-                            ),
+                          //  SvgPicture.asset(
+                              
+                           //   width: 30,
+                           //   height: 30,
+                          //  ),
                             SizedBox(width: 8),
                             Text(
                               userData['alias'] ?? 'Anonymous',

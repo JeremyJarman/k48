@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'gameplay_screen.dart';
+import 'package:provider/provider.dart';
 import 'dataset_service.dart';
+import 'wortschatz_gameplay_screen.dart';
+import 'my_app_state.dart';
 
 class WortschatzPage extends StatefulWidget {
   @override
@@ -8,33 +10,40 @@ class WortschatzPage extends StatefulWidget {
 }
 
 class _WortschatzPageState extends State<WortschatzPage> {
+  late DatasetService _datasetService;
   List<String> _unlockedDatasets = [];
-  Map<String, int> _datasetScores = {};
-  final DatasetService _datasetService = DatasetService();
+  Map<String, double> _datasetScores = {};
 
   @override
   void initState() {
     super.initState();
+    _datasetService = Provider.of<DatasetService>(context, listen: false);
     _loadUnlockedDatasets();
+    _precacheImages();
   }
 
   Future<void> _loadUnlockedDatasets() async {
-    final unlockedDatasets = await _datasetService.getUnlockedDatasets();
-    final datasetScores = await _datasetService.getDatasetScores();
-    print('Unlocked Datasets: $unlockedDatasets'); // Debugging statement
-    print('Dataset Scores: $datasetScores'); // Debugging statement
+    final unlockedDatasets = _datasetService.unlockedWortschatzDatasets;
+    final datasetScores = _datasetService.datasetScores;
+    print('Unlocked Wortschatz Datasets: $unlockedDatasets'); // Debugging statement
+    print('Wortschatz Dataset Scores: $datasetScores'); // Debugging statement
     setState(() {
       _unlockedDatasets = unlockedDatasets;
       _datasetScores = datasetScores;
     });
   }
 
+  Future<void> _precacheImages() async {
+    await precacheImage(AssetImage('assets/galaxy.jpg'), context);
+  }
+
   void _onDatasetCompleted(String dataset, int score) async {
-    await _datasetService.markDatasetAsCompleted(dataset, score);
-    final unlockedDatasets = await _datasetService.getUnlockedDatasets();
-    final datasetScores = await _datasetService.getDatasetScores();
-    print('Unlocked Datasets after completion: $unlockedDatasets'); // Debugging statement
-    print('Dataset Scores after completion: $datasetScores'); // Debugging statement
+    _datasetService.updateDatasetScore(dataset, score.toDouble());
+    _datasetService.unlockNextDataset(false); // Assuming false for Wortschatz datasets
+    final unlockedDatasets = _datasetService.unlockedWortschatzDatasets;
+    final datasetScores = _datasetService.datasetScores;
+    print('Unlocked Wortschatz Datasets after completion: $unlockedDatasets'); // Debugging statement
+    print('Wortschatz Dataset Scores after completion: $datasetScores'); // Debugging statement
     setState(() {
       _unlockedDatasets = unlockedDatasets;
       _datasetScores = datasetScores;
@@ -64,14 +73,14 @@ class _WortschatzPageState extends State<WortschatzPage> {
             ),
           ),
           ListView.builder(
-            itemCount: _datasetService.allDatasets.length,
+            itemCount: _datasetService.allWortschatzDatasets.length,
             itemBuilder: (context, index) {
-              final dataset = _datasetService.allDatasets[index];
+              final dataset = _datasetService.allWortschatzDatasets[index];
               final isUnlocked = _unlockedDatasets.contains(dataset['filename']);
-              final score = _datasetScores[dataset['filename']] ?? 0;
+              final score = _datasetScores[dataset['filename']] ?? 0.0;
               return ListTile(
                 title: Text(
-                  '${index + 1}. ${dataset['title']} - ${score}%',
+                  '${index + 1}. ${dataset['title']} - $score%',
                   style: TextStyle(color: isUnlocked ? Colors.white : Colors.grey),
                 ),
                 onTap: isUnlocked
@@ -79,7 +88,7 @@ class _WortschatzPageState extends State<WortschatzPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => GameplayScreen(
+                            builder: (context) => WortschatzGameplayScreen(
                               dataset: dataset['filename']!,
                               title: dataset['title']!,
                               onDatasetCompleted: (score) => _onDatasetCompleted(dataset['filename']!, score),

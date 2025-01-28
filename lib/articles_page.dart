@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'articles_gameplay_screen.dart';
+import 'package:provider/provider.dart';
 import 'dataset_service.dart';
+import 'articles_gameplay_screen.dart';
 
 class ArticlesPage extends StatefulWidget {
   @override
@@ -8,36 +9,42 @@ class ArticlesPage extends StatefulWidget {
 }
 
 class _ArticlesPageState extends State<ArticlesPage> {
-  List<String> _unlockedDatasets = [];
-  Map<String, int> _datasetScores = {};
-  final DatasetService _datasetService = DatasetService();
+  late DatasetService _datasetService;
+  List<String> _unlockedArticleDatasets = [];
+  Map<String, double> _datasetScores = {};
 
   @override
   void initState() {
     super.initState();
+    _datasetService = Provider.of<DatasetService>(context, listen: false);
     _loadUnlockedDatasets();
   }
 
   Future<void> _loadUnlockedDatasets() async {
-    final unlockedDatasets = await _datasetService.getUnlockedArticleDatasets();
-    final datasetScores = await _datasetService.getArticleDatasetScores();
-    print('Unlocked Article Datasets: $unlockedDatasets'); // Debugging statement
-    print('Article Dataset Scores: $datasetScores'); // Debugging statement
-    setState(() {
-      _unlockedDatasets = unlockedDatasets;
-      _datasetScores = datasetScores;
+    final unlockedArticleDatasets = _datasetService.unlockedArticleDatasets;
+    final datasetScores = _datasetService.datasetScores;
+    print('Unlocked Articles Datasets: $unlockedArticleDatasets'); // Debugging statement
+    print('Dataset Scores: $datasetScores'); // Debugging statement
+    Future.microtask(() {
+      setState(() {
+        _unlockedArticleDatasets = unlockedArticleDatasets;
+        _datasetScores = datasetScores;
+      });
     });
   }
 
   void _onDatasetCompleted(String dataset, int score) async {
-    await _datasetService.markArticleDatasetAsCompleted(dataset, score);
-    final unlockedDatasets = await _datasetService.getUnlockedArticleDatasets();
-    final datasetScores = await _datasetService.getArticleDatasetScores();
-    print('Unlocked Article Datasets after completion: $unlockedDatasets'); // Debugging statement
+    _datasetService.updateDatasetScore(dataset, score.toDouble());
+    _datasetService.unlockNextDataset(true); // Assuming true for Article datasets
+    final unlockedArticleDatasets = _datasetService.unlockedArticleDatasets;
+    final datasetScores = _datasetService.datasetScores;
+    print('Unlocked Article Datasets after completion: $unlockedArticleDatasets'); // Debugging statement
     print('Article Dataset Scores after completion: $datasetScores'); // Debugging statement
-    setState(() {
-      _unlockedDatasets = unlockedDatasets;
-      _datasetScores = datasetScores;
+    Future.microtask(() {
+      setState(() {
+        _unlockedArticleDatasets = unlockedArticleDatasets;
+        _datasetScores = datasetScores;
+      });
     });
   }
 
@@ -67,11 +74,11 @@ class _ArticlesPageState extends State<ArticlesPage> {
             itemCount: _datasetService.allArticleDatasets.length,
             itemBuilder: (context, index) {
               final dataset = _datasetService.allArticleDatasets[index];
-              final isUnlocked = _unlockedDatasets.contains(dataset['filename']);
-              final score = _datasetScores[dataset['filename']] ?? 0;
+              final isUnlocked = _unlockedArticleDatasets.contains(dataset['filename']);
+              final score = _datasetScores[dataset['filename']] ?? 0.0;
               return ListTile(
                 title: Text(
-                  '${index + 1}. ${dataset['title']} - ${score}%',
+                  '${index + 1}. ${dataset['title']} - $score%',
                   style: TextStyle(color: isUnlocked ? Colors.white : Colors.grey),
                 ),
                 onTap: isUnlocked
