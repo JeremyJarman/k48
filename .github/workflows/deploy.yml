@@ -26,7 +26,7 @@ jobs:
     - name: Build web
       run:
         flutter doctor  
-        flutter build web --no-tree-shake-icons
+        flutter build web
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
