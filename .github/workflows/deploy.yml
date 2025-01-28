@@ -16,7 +16,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '2.17.0'  # Ensure compatibility with Dart SDK
+        flutter-version: '3.0.0'  # Update to a valid Flutter version
 
     - name: Install dependencies
       run: flutter pub get
