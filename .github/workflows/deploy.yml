@@ -16,13 +16,17 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.0.0'  # Update to a valid Flutter version
-
+        flutter-version: '3.3.0'  # Update to a valid Flutter version
+        channel: 'stable'
+        architecture: 'x64'
+        
     - name: Install dependencies
       run: flutter pub get
 
     - name: Build web
-      run: flutter build web --no-tree-shake-icons
+      run:
+        flutter doctor  
+        flutter build web --no-tree-shake-icons
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
