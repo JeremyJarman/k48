@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+//import 'dart:math';
 
 class NounCard extends StatelessWidget {
   final String noun;
@@ -124,22 +124,22 @@ class NounCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final randomAdjective = adjective;
     final nominativeBestimmtEnding = getBestimmtEnding(selectedArticle ?? '', 'N');
-    final dativeBestimmtEnding = getBestimmtEnding(selectedArticle ?? '', 'D');
+    //final dativeBestimmtEnding = getBestimmtEnding(selectedArticle ?? '', 'D');
     final accusativeBestimmtEnding = getBestimmtEnding(selectedArticle ?? '', 'A');
-    final nominativeUnbestimmtEnding = getUnbestimmtEnding(selectedArticle ?? '', 'N');
+    //final nominativeUnbestimmtEnding = getUnbestimmtEnding(selectedArticle ?? '', 'N');
     final dativeUnbestimmtEnding = getUnbestimmtEnding(selectedArticle ?? '', 'D');
-    final accusativeUnbestimmtEnding = getUnbestimmtEnding(selectedArticle ?? '', 'A');
+    //final accusativeUnbestimmtEnding = getUnbestimmtEnding(selectedArticle ?? '', 'A');
 
     final nominativeBestimmtAEnding = getBestimmtAdjectiveEnding(selectedArticle ?? '', 'N');
-    final dativeBestimmtAEnding = getBestimmtAdjectiveEnding(selectedArticle ?? '', 'D');
+    //final dativeBestimmtAEnding = getBestimmtAdjectiveEnding(selectedArticle ?? '', 'D');
     final accusativeBestimmtAEnding = getBestimmtAdjectiveEnding(selectedArticle ?? '', 'A');
-    final nominativeUnbestimmtAEnding = getUnbestimmtAdjectiveEnding(selectedArticle ?? '', 'N');
+    //final nominativeUnbestimmtAEnding = getUnbestimmtAdjectiveEnding(selectedArticle ?? '', 'N');
     final dativeUnbestimmtAEnding = getUnbestimmtAdjectiveEnding(selectedArticle ?? '', 'D');
-    final accusativeUnbestimmtAEnding = getUnbestimmtAdjectiveEnding(selectedArticle ?? '', 'A');
+    //final accusativeUnbestimmtAEnding = getUnbestimmtAdjectiveEnding(selectedArticle ?? '', 'A');
 
-    final nominativeOhneAEnding = getOhneArticleAdjectiveEnding(selectedArticle ?? '', 'N');
-    final dativeOhneAEnding = getOhneArticleAdjectiveEnding(selectedArticle ?? '', 'D');
-    final accusativeOhneAEnding = getOhneArticleAdjectiveEnding(selectedArticle ?? '', 'A');
+    //final nominativeOhneAEnding = getOhneArticleAdjectiveEnding(selectedArticle ?? '', 'N');
+    //final dativeOhneAEnding = getOhneArticleAdjectiveEnding(selectedArticle ?? '', 'D');
+    //final accusativeOhneAEnding = getOhneArticleAdjectiveEnding(selectedArticle ?? '', 'A');
 
     return Card(
       color: Theme.of(context).primaryColor.withOpacity(0.3), // Set the background color to be 60% transparent

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'german_noun_quiz.dart';
+
 
 class SignupPage extends StatefulWidget {
   @override

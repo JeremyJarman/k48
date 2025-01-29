@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+//import 'package:flutter_svg/flutter_svg.dart';
 import 'my_app_state.dart';
-import 'profile_page.dart'; // Import ProfilePage for getRankBadge method
+//import 'profile_page.dart'; // Import ProfilePage for getRankBadge method
 
 class LeaderboardPage extends StatefulWidget {
   @override

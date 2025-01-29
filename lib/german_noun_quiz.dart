@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:csv/csv.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:flutter/services.dart' show rootBundle;
+//import 'package:csv/csv.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'my_app_state.dart';
-import 'custom_app_bar.dart';
-import 'diamond_card.dart';
-import 'noun_card.dart';
-import 'add_health_button.dart';
+//import 'custom_app_bar.dart';
+//import 'diamond_card.dart';
+//import 'noun_card.dart';
+//import 'add_health_button.dart';
 
 class GermanNounQuiz extends StatefulWidget {
   int _mana = 0; // Track the mana points

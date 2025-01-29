@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'my_app_state.dart';
-import 'main.dart'; // Import the main file to navigate to the home page
+//import 'main.dart'; // Import the main file to navigate to the home page
 import 'home_page.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
