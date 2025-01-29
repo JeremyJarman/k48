@@ -36,7 +36,7 @@ jobs:
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
           git checkout -b gh-pages || git checkout gh-pages
-          git pull origin gh-pages
+          git pull origin gh-pages --rebase  # Optionally, use --merge or --ff-only
           git add .
           git commit -m "Deploy to GitHub Pages"
           git push origin gh-pages
