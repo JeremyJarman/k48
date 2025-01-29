@@ -34,8 +34,12 @@ jobs:
         flutter build web
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GH_PAT }}
-        publish_dir: build/web
-        publish_branch: gh-pages
+      env:
+        GH_PAT: ${{ secrets.GH_PAT }}
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
+        git remote set-url origin https://${GH_PAT}@github.com/${{ github.repository }}
+        git checkout -b gh-pages || git checkout gh-pages
+        git merge main --allow-unrelated-histories
+        git push origin gh-pages
