@@ -36,9 +36,7 @@ jobs:
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
           git checkout -b gh-pages || git checkout gh-pages
-          git stash
-          git pull origin gh-pages --rebase
-          git stash pop
+          git pull origin gh-pages --strategy=theirs
           git add .
           git commit -m "Deploy to GitHub Pages"
           git push origin gh-pages
