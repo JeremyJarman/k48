@@ -29,8 +29,9 @@ jobs:
         flutter build web
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GH_PAT }}
-        publish_dir: build/web
-        publish_branch: gh-pages
+      run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git push origin gh-pages
+      env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
