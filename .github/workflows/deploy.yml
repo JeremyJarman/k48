@@ -9,12 +9,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Ensure the full history is fetched
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
@@ -27,18 +26,13 @@ jobs:
       run: flutter pub get
 
     - name: Build web
-      run:
-        flutter doctor  
+      run: 
+        flutter doctor
         flutter build web
 
     - name: Deploy to GitHub Pages
-      run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-          git checkout -b gh-pages || git checkout gh-pages
-          git pull origin gh-pages --strategy=theirs
-          git add .
-          git commit -m "Deploy to GitHub Pages"
-          git push origin gh-pages
-      env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GH_PAT }}
+        publish_dir: build/web
+        publish_branch: gh-pages
