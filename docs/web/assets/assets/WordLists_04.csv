@@ -1,0 +1,65 @@
+Type,Prefix,Word,suffix,Translation,Definition,Example
+Sub,die,Bücherei,-en,library,"Ort, wo man Bücher ausleihen kann","Ich gehe in die Bücherei, um ein Buch auszuleihen."
+Sub,das,Camping,,camping,Übernachtung im Freien oder in Zelten,Wir lieben Camping in den Bergen.
+Sub,die,Flöte,-n,flute,Musikinstrument,Sie spielt die Flöte im Orchester.
+Sub,die,Leichtathletik,,athletics,"Sportarten wie Laufen, Springen, Werfen",Er trainiert täglich Leichtathletik.
+Sub,die,Literatur,-en,literature,"Geschriebene Werke, wie Romane und Gedichte",Ich studiere deutsche Literatur an der Uni.
+Sub,die,Malerei,,painting,Kunst des Malens,Die Malerei von van Gogh ist weltberühmt.
+Sub,die,Media,,media,Kommunikationsmittel,Die sozialen Media spielen eine große Rolle.
+Sub,der,Modellbau,,model building,Bau von kleinen Modellen,Er liebt den Modellbau von Flugzeugen.
+Sub,das,Motorrad,ä-er,motorcycle,Fahrzeug mit zwei Rädern,Sie fährt mit dem Motorrad zur Arbeit.
+Sub,die,Schauspielerei,,acting,Darstellung in Theater oder Film,Schauspielerei ist seine große Leidenschaft.
+Sub,das,Spiel,-e,game,Aktivität zur Unterhaltung,Das Spiel war spannend bis zum Ende.
+Verb,ab,schalten,,switch off,etwas ausmachen,Ich schalte den Fernseher ab.
+Verb,,boxen,,box,Kampfsportart,Er lernt boxen im Fitnessstudio.
+Verb,,fraulenzen,,laze around,nichts tun; entspannen,Am Wochenende faulenze ich oft.
+Verb,,herum,,hang around,ohne Ziel herumlaufen,Wir hängen im Park herum.
+Verb,,rum hängen,,hang out,Zeit verbringen ohne Plan,Die Jugendlichen hängen oft im Einkaufszentrum rum.
+Verb,,nähen,(+A),sew,Stoffe zusammenfügen,Sie näht ihre Kleider selbst.
+Verb,,springen,,jump,sich vom Boden abstoßen,Der Hund springt über den Zaun.
+Verb,,tauchen,,dive,ins Wasser springen oder tief schwimmen,"Er liebt es, im Meer zu tauchen."
+Adj,,entspannend,,relaxing,ruhig und erholsam,Die Musik ist sehr entspannend.
+Phrase,,sich auf die faule Haut legen,,lay back,nichts tun,Im Urlaub lege ich mich auf die faule Haut.
+Phrase,,die Füße hochlegen,,put up one's feet,entspannen,Nach der Arbeit lege ich die Füße hoch.
+Sub,die,Aufführung,-en,performance,"Veranstaltung, bei der etwas gezeigt wird",Die Aufführung war ein großer Erfolg.
+Sub,der,Fan,-s,fan,begeisterter Anhänger,Er ist ein großer Fan der Band.
+Sub,die,Galerie,-n,gallery,Ort für Kunstwerke,Die neue Galerie hat beeindruckende Bilder.
+Sub,die,Kälte,,cold,niedrige Temperatur,Im Winter ist die Kälte manchmal unerträglich.
+Sub,die,Oper,-n,opera,Musiktheater,Wir besuchen die Oper am Wochenende.
+Sub,das,Publikum,,audience,"Gruppe, die zuschaut oder zuhört",Das Publikum applaudierte begeistert.
+Sub,die,Warte,-n,waiting place,"Ort, wo man wartet",Die Warte war voller Menschen.
+Sub,die,Schlange,-n,queue,Reihe von wartenden Personen,Es gab eine lange Schlange vor dem Kino.
+Sub,das,Smartphone,-s,smartphone,modernes Handy,Sie benutzt ihr Smartphone den ganzen Tag.
+Sub,das,Stadion,,stadium,großer Platz für Sportveranstaltungen,Das Stadion war mit Fans gefüllt.
+Sub,der,Treffpunkt,-e,meeting point,"Ort, wo man sich trifft",Unser Treffpunkt ist vor dem Kino.
+Sub,die,Vorstellung,-en,presentation,Darstellung oder Aufführung,Die Vorstellung beginnt um 19 Uhr.
+Sub,das,Werk,-e,work,künstlerische oder technische Schöpfung,Das Werk des Künstlers ist sehr berühmt.
+Sub,der,Zuschauer,,viewer,"Person, die etwas beobachtet",Die Zuschauer waren begeistert von der Show.
+Verb,,chatten,,chat,online kommunizieren,Wir chatten jeden Abend über Social Media.
+Verb,,drauf sprechen,(+D),leave a message,Nachricht hinterlassen,Bitte sprechen Sie Ihre Nachricht auf den Anrufbeantworter.
+Verb,,mailen,,email,elektronische Nachricht senden,Ich maile dir die Unterlagen.
+Verb,,rangehen,,answer,ans Telefon gehen,Kannst du bitte rangehen? Es klingelt.
+Verb,,simsen,,text,eine SMS schreiben,Sie simst mir immer nach der Schule.
+Verb,,sich verspäten,,be late,nicht pünktlich sein,Er hat sich um 10 Minuten verspätet.
+Verb,,bestellen,(+A),order,etwas anfordern oder kaufen,Wir bestellen eine Pizza zum Abendessen.
+Verb,,Vorbestellen,(+A),pre-order,etwas im Voraus bestellen,Ich habe das Buch vorbestellt.
+Verb,,rufen,(+A),call,jemanden laut ansprechen,Er ruft seinen Hund im Park.
+Adj,,ausverkauft,,sold out,nicht mehr verfügbar,Die Tickets sind bereits ausverkauft.
+Adj,,historisch,,historical,zur Geschichte gehörend,Die Stadt hat viele historische Gebäude.
+Adj,,rechtzeitig,,on time,pünktlich,Wir sind rechtzeitig angekommen.
+Adj,,technisch,,technical,auf Technik bezogen,Die technische Ausstattung ist modern.
+Sub,der,Blogger,,blogger,"Person, die ein Blog schreibt",Der Blogger postet täglich neue Artikel.
+Sub,das,Abenteuer,,adventure,aufregendes Erlebnis,Unser Urlaub war ein großes Abenteuer.
+Sub,der,Chatroom,-s,chatroom,virtueller Kommunikationsraum,Der Chatroom war sehr aktiv gestern.
+Sub,die,Dokumentation,-en,documentation,ausführlicher Bericht oder Film,Die Dokumentation über die Natur war faszinierend.
+Sub,der,Film,-en,film,Kino- oder Fernsehproduktion,Der neue Film läuft ab heute im Kino.
+Sub,das,Gedicht,-e,poem,literarisches Werk in Versen,Das Gedicht ist sehr berührend.
+Sub,die,Komödie,-n,comedy,lustiges Theaterstück oder Film,Die Komödie brachte uns alle zum Lachen.
+Sub,das,Märchen,,fairy tale,erfundene Geschichte,Die Kinder lieben das Märchen von Aschenputtel.
+Sub,der,Moderator,-en,moderator,Leiter einer Sendung,Der Moderator stellte interessante Fragen.
+Sub,die,Platform,-en,platform,Grundlage für Kommunikation oder Technik,Die Plattform unterstützt verschiedene Sprachen.
+Sub,der,Regisseur,-e,director,Leiter eines Films oder Stücks,Der Regisseur gewann einen wichtigen Preis.
+Sub,der,Sender,,broadcaster,"Unternehmen, das TV/Radio sendet",Der Sender hat eine neue Serie gestartet.
+Sub,die,Serie,-n,series,zusammenhängende Folgen,Die Serie hat viele Fans weltweit.
+Sub,die,Show,-s,show,Unterhaltungsveranstaltung,Die Show war sehr beeindruckend.
+Sub,die,Software,,software,Programme für Computer,Die Software wird regelmäßig aktualisiert.
