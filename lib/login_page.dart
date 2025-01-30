@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'main.dart'; // Import your main file to navigate to the home page
+import 'main.dart'; // Import your main file to navigate to the home page
 import 'signup_page.dart'; // Import the signup page
 import 'home_page.dart';
+import 'auth_wrapper.dart';
+import 'package:provider/provider.dart';
+import 'my_app_state.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }

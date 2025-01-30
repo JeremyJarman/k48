@@ -12,7 +12,7 @@ import 'my_app_state.dart';
 //import 'add_health_button.dart';
 
 class GermanNounQuiz extends StatefulWidget {
-  int _mana = 0; // Track the mana points
+  //int _mana = 0; // Track the mana points
 
   GermanNounQuiz();
 
@@ -45,7 +45,7 @@ class _GermanNounQuizState extends State<GermanNounQuiz> with TickerProviderStat
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var screenHeight = MediaQuery.of(context).size.height;
-    var screenWidth = MediaQuery.of(context).size.width;
+    //var screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       extendBody: true, // Extend the body behind the bottom app bar

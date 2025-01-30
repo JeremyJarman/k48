@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,21 +12,26 @@ import 'dataset_service.dart';
 import 'wortschatz_page.dart';
 import 'my_app_state.dart'; // Import MyAppState
 
+
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform, // Ensure this line is present
   );
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MyAppState()), // Add MyAppState provider
         ChangeNotifierProvider(create: (_) => DatasetService()), // Use Provider instead of ChangeNotifierProvider
-        
       ],
       child: MyApp(),
     ),
   );
+
+ 
 }
 
 void customPrint(Object? object) => debugPrint(object.toString());
@@ -47,6 +53,21 @@ class MyApp extends StatelessWidget {
         '/wortschatz': (context) => WortschatzPage(),
         '/auth': (context) => AuthWrapper(),
       },
+    );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Simulate a splash screen delay
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.pushReplacementNamed(context, '/login');
+    });
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }

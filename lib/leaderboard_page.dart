@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:flutter_svg/flutter_svg.dart';
-import 'my_app_state.dart';
+//import 'my_app_state.dart';
 //import 'profile_page.dart'; // Import ProfilePage for getRankBadge method
 
 class LeaderboardPage extends StatefulWidget {
@@ -33,7 +33,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    //var appState = context.watch<MyAppState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -139,7 +139,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> with SingleTickerProv
                       );
                     }
                     var userData = userSnapshot.data!.data() as Map<String, dynamic>;
-                    var elo = userData['elo'] ?? 0;
+                    //var elo = userData['elo'] ?? 0;
                     //var rank = MyAppState().getRankFromElo(elo);
                     //var level = MyAppState().getLevelFromElo(elo);
                     //var rankBadge = getRankBadge(rank, level);

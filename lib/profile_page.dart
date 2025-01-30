@@ -27,8 +27,8 @@ class _ProfilePageState extends State<ProfilePage> {
     final datasetService = appState.datasetService;
 
     final datasetScores = datasetService.datasetScores;
-    final unlockedWortschatzDatasets = datasetService.unlockedWortschatzDatasets;
-    final unlockedArticleDatasets = datasetService.unlockedArticleDatasets;
+    //final unlockedWortschatzDatasets = datasetService.unlockedWortschatzDatasets;
+    //final unlockedArticleDatasets = datasetService.unlockedArticleDatasets;
 
     final allScores = datasetScores.values.toList();
     final totalDatasets = allScores.length;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
-import 'csv_loader.dart';
+//import 'csv_loader.dart';
 import 'my_app_state.dart';
 import 'add_health_button.dart';
 import 'noun_card.dart'; // Import the NounCard widget
-import 'package:vibration/vibration.dart'; // Import vibration package
+//import 'package:vibration/vibration.dart'; // Import vibration package
 import 'end_screen.dart'; // Import the end screen
 import 'dataset_service.dart';
 
@@ -117,7 +117,7 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
   }
 
   void _endGame(bool datasetPassed) async {
-    final datasetService = Provider.of<DatasetService>(context, listen: false);
+    //final datasetService = Provider.of<DatasetService>(context, listen: false);
     final appState = Provider.of<MyAppState>(context, listen: false);
     final eloChange = (_correctAnswers / _data.length * 100).round();
     appState.updateElo(appState.elo + eloChange);

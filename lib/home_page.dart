@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:german_nouns_app/articles_page.dart';
 import 'package:provider/provider.dart';
-//import 'package:firebase_core/firebase_core.dart';
-//import 'auth_wrapper.dart'; // Import the AuthWrapper
+import 'package:firebase_core/firebase_core.dart';
+import 'auth_wrapper.dart'; // Import the AuthWrapper
 import 'wortschatz_page.dart';
 import 'admin_panel.dart';
 import 'leaderboard_page.dart';
@@ -12,7 +12,7 @@ import 'profile_page.dart';
 
 import 'login_page.dart';
 import 'package:flutter/services.dart' show rootBundle;
-//import 'main.dart';
+import 'main.dart';
 import 'my_app_state.dart'; // Ensure this import is present
 
 class MyHomePage extends StatefulWidget {
@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    var appState = context.watch<MyAppState>();
+    //var appState = context.watch<MyAppState>();
 
     return Scaffold(
       appBar: AppBar(
