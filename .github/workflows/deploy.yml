@@ -16,7 +16,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.24.5'  # Update to a valid Flutter version
+        flutter-version: 'stable'
         channel: 'stable'
         architecture: 'x64'
 
@@ -25,6 +25,12 @@ jobs:
 
     - name: Build web
       run: flutter build web --release --no-tree-shake-icons
+
+    - name: List build directory
+      run: ls -la build/web
+
+    - name: Check if build directory exists
+      run: if [ -d "build/web" ]; then echo "Build directory exists"; else echo "Build directory does not exist"; fi
 
     - name: Deploy to GitHub Pages
       env:
