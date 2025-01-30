@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'k48',
+      title: 'k48 deployment test',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
