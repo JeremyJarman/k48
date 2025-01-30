@@ -89,3 +89,4 @@ flutter:
     - assets/WordLists_02.csv
     - assets/WordLists_03.csv
     - assets/WordLists_04.csv
+    - assets/manifest.json
