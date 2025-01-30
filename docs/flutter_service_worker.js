@@ -33,6 +33,7 @@ const RESOURCES = {"assets/AssetManifest.bin": "bb3946e0569be11c849666a381987376
 "assets/assets/FontManifest.json": "cf3c681641169319e61b61bd0277378f",
 "assets/assets/galaxy.jpg": "17960eb843d6739f59b0ccae282147d6",
 "assets/assets/GameOverFrame.svg": "0ec320fe10fdaadd5ea4c4aa99b46295",
+"assets/assets/manifest.json": "69ba61cc3cd6255ea3447bb6eafa3b5c",
 "assets/assets/Nexar2.jpg": "7c482b0f32da67b5c113b4ebff55e2f4",
 "assets/assets/NOTICES": "471d250a3afc8e9867d01ce1f700f925",
 "assets/assets/ranks/Explorer1.svg": "86bf7d96aa74f523669d83cacc77dadb",
