@@ -1,0 +1,648 @@
+ganz,y,whole or all the
+groß,y,big or large or great
+gut,y,good
+neu,y,new
+erste (r or s),,first
+lang,y,long
+deutsch,y,German
+klein,y,small or little
+alt,y,old
+hoch,y,high or tall
+einfach,y,simple or easy
+letzte (r or s),,last
+gleich,y,same or right away or just
+möglich,y,possible
+eigen,,own
+schön,y,beautiful or pleasant or good
+spät,y,late
+wichtig,y,important
+weitere (r or s),,additional
+genau,y,exactly
+jung,y,young
+kurz,y,short
+stark,y,strong
+richtig,y,correct
+verschieden,y,different or diverse
+bestimmt,y,special or certain
+besser,,better
+schnell,y,fast
+sicher,,safe or secure or certain
+nächste (r or s),,next
+politisch,,political
+klar,,clear
+schwer,y,difficult or heavy
+einzeln,,individual
+bekannt,,well-known
+leicht,y,light or easy
+rund,,round
+frei,y,free
+früh,y,early
+unterschiedlich,,different or variable
+schlecht,y,bad
+deutlich,,clear
+allgemein,,general
+einzig,,only or single
+gemeinsam,y,common or mutual
+nahe or nah,,near or close
+voll,y,full
+direkt,y,direct or straight
+international,y,international
+sozial,y,social
+beste (r ors),,best
+rot,y,red
+offen,y,open
+meiste,,most
+besondere (r ors),,special
+gewiss,y,certain
+öffentlich,,public
+halb,y,half
+wahrscheinlich,,probably
+europäisch,,European
+wesentlich,,essential or fundamental
+ähnlich,y,similar
+häufig,y,frequent
+schwarz,y,black
+völlig,y,complete
+gering,,low or small
+schwierig,y,difficult
+praktisch,y,practical
+persönlich,y,personal
+–jährig,,years old
+modern,,modern
+tief,y,deep
+tatsächlich,,real or actual
+zusätzlich,,additional
+wirtschaftlich,,economic or financial
+interessant,y,interesting
+relativ,y,relative
+gleichzeitig,,simultaneous
+grün,y,green
+weiß,y,white
+gesamt,y,whole or entire
+speziell,y,special or specific
+entscheidend,,decisive
+eng,,narrow or close
+technisch,,technical
+langsam,y,slow
+ständig,,constant
+notwendig,y,necessary
+rein,,pure or clear or clean
+englisch,,English
+wissenschaftlich,y,scientific or scholarly
+falsch,y,false or wrong
+fremd,y,foreign or strange
+selten,,rare
+normal,,normal
+wahr,y,true
+privat,y,private
+tot,,dead
+fest,y,firm or solid
+positiv,y,positive
+zentral,,central
+fertig,,finished or ready
+grundsätzlich,,fundamental
+breit,y,wide or broad
+hart,y,hard
+vorhanden,y,available or existing
+innere,,internal
+künftig,,future
+historisch,y,historical
+knapp,,scarce or slim
+aktuell,y,current
+übrig,,remaining or left
+schlimm,y,bad or serious
+schlimmer,,worse
+lieb,y,dear or kind
+dunkel,y,dark
+offenbar,,obvious
+rechte,,right
+zahlreich,y,numerous
+erfolgreich,y,successful
+konkret,y,concrete
+weltweit,,world-wide
+geboren,,born
+menschlich,,human
+regelmäßig,y,regular
+aktiv,y,active
+staatlich,,state or government or national
+ehemalig,,former
+kalt,y,cold
+jeweilig,y,particular or respective
+erforderlich,,require or necessary
+heutig,,present-day or today's
+kulturell,y,cultural
+unabhängig,,independent
+ruhig,y,quiet or calm
+unmittelbar,,immediate or direct
+bewusst,,conscious
+finanziell,,financial
+klassisch,,classical
+heiß,,hot
+echt,,genuine or real
+teuer,,expensive
+nötig,,necessary
+toll,,great or terrific
+erneut,,again or renewed
+täglich,,daily
+üblich,,usual
+absolut,,absolute
+gesellschaftlich,,social
+individuell,,individual
+leer,,empty
+national,,national
+ungefähr,,approximately
+blau,,blue
+rasch,,quick
+verantwortlich,,responsible
+zuständig,,appropriate or responsible
+erheblich,,considerable
+ernst,,serious
+okay,,okay
+typisch,,typical
+zufrieden,,satisfied
+krank,,sick or ill
+warm,,warm
+dick,,thick or fat
+schwach,,weak
+linke,,left
+niedrig,,low or base
+traditionell,,traditional
+bereit,,ready
+gesetzlich,,legal
+leise,,quiet or soft
+negativ,,negative
+glücklich,,happy or fortunate
+beruflich,,professional
+selbstverständlich,,obvious
+offiziell,,official
+streng,,strict
+fein,,fine
+komplex,,complex
+obere,,upper
+ausländisch,,foreign
+ausschließlich,,exclusive
+bisherig,,so far
+laut,,loud
+sinnvoll,,sensible or meaningful
+tätig,,active
+ursprünglich,,original
+geistig,,intellectual or mental
+jährlich,,annual
+böse,,bad or mad
+frisch,,fresh
+weitgehend,,extensive
+intensiv,,intensive
+außen,,outside
+automatisch,,automatic
+gefährlich,,dangerous
+heftig,,heavy or violent
+militärisch,,military
+vollständig,,complete
+eindeutig,,clear
+offensichtlich,,obvious
+schart,,sharp
+theoretisch,,theoretical
+berühmt,,famous
+hell,,light or bright
+still,,still or quiet
+froh,,happy
+kritisch,,critical
+reich,,rich or abundant
+riesig,,enormous
+dicht,,thick or dense
+günstig,,favorable or good
+hauptsächlich,,main
+gegenwärtig,,present
+mittlere,,middle or average
+nett,,nice
+zeitlich,,in time
+spezifisch,,specific
+elektrisch,,electric
+gesund,,healthy
+grau,,grey
+westlich,,westerly
+chemisch,,chemical
+extrem,,extreme
+freundlich,,friendly
+total,,total or complete
+stolz,,proud
+unbekannt,,unknown
+elektronisch,,electronic
+endgültig,,final
+künstlerisch,,artistic
+sichtbar,,visible
+abhängig,,dependent
+biologisch,,biological
+doppelt,,double
+schuld,,guilty
+selbstständig,,independent
+umgekehrt,,reversed or contrary
+arbeitslos,,unemployed
+mächtig,,powerful
+ökonomisch,,economic
+rechtlich,,legal
+religiös,,religious
+schriftlich,,written
+angeblich,,alleged
+billig,,cheap
+damalig,,at that time
+geographisch,,geographic
+kräftig,,strong
+wild,,wild
+bunt,,colorful
+dringend,,urgent
+freiwillig,,voluntary
+heilig,,holy
+ideal,,ideal
+regional,,regional
+überwiegend,,predominant
+unmöglich,,impossible
+angenehm,,pleasant
+bedeutend,,important or significant
+eventuell,,possible
+körperlich,,physical
+medizinisch,,medical
+räumlich,,three-dimensional or spatial
+angemessen,,appropriate
+aufmerksam,,attentive
+dünn,,thin
+global,,global
+sonstig,,other
+sprachlich,,linguistic
+vorsichtig,,cautious
+derartig,,such or like that
+ehrlich,,honest
+entfernt,,distant
+gelb,,yellow
+schmal,,narrow or slender
+welch,,soft
+empirisch,,empirical
+ewig,,eternal
+traurig,,sad
+trocken,,dry
+unheimlich,,eerie or scary or incredible
+vielfältig,,diverse or varied
+wunderbar,,wonderful
+arm,,poor
+gegenseitig,,mutual or each other
+gewaltig,,enormous or tremendous or powerful
+grundlegend,,basic or fundamental
+sportlich,,athletic
+verheiratet,,married
+langfristig,,long-term
+ordentlich,,neat or proper or orderly
+äußere,,outer or external
+demokratisch,,democratic
+exakt,,exact
+inhaltlich,,in terms of content
+künstlich,,artificial
+perfekt,,perfect
+sauber,,clean
+gelegentlich,,occasionally
+gewohnt,,usual
+grob,,coarse or rude or gross
+literarisch,,literary
+maximal,,maximum
+parallel,,parallel
+untere,,lower
+vergleichbar,,comparable
+enorm,,enormous
+flach,,flat or low or shallow
+kompliziert,,complicated
+kurzfristig,,at short notice
+massiv,,solid or massive or severe
+optimal,,best possible or optimum
+allmählich,,gradual
+gerecht,,just
+müde,,tired
+strategisch,,strategic
+umfangreich,,extensive
+digital,,digital
+generell,,general
+konservativ,,conservative
+kühl,,cool
+lokal,,local
+nackt,,naked or bare
+physikalisch,,physical
+schrecklich,,terrible
+spannend,,exciting or thrilling
+touristisch,,touristic
+vielfach,,multiple
+gewöhnlich,,usual
+komplett,,complete
+zukünftig,,future
+braun,,brown
+einheitlich,,uniform or standardized
+gezielt,,purposeful or pointed or well-aimed
+real,,real
+schade,,pity
+statistisch,,statistical
+zufällig,,accidental or by chance
+dramatisch,,dramatic
+erkennbar,,recognizable
+fern,,far or distant
+juristisch,,legal or juridical
+komisch,,funny or strange
+lustig,,funny or enjoyable
+musikalisch,,musical
+objektiv,,objective
+seltsam,,strange or peculiar
+sorgfältig,,careful
+unglaublich,,incredible
+vernünftig,,sensible
+durchschnittlich,,average
+gefangen,,captive or be a prisoner
+mathematisch,,mathematical
+radikal,,radical
+stabil,,stable or sturdy
+systematisch,,systematic
+verrückt,,crazy
+vertraut,,familiar or close
+winzig,,tiny
+ernsthaft,,serious
+erstaunlich,,astonishing
+glatt,,smooth or slippery
+golden,,gold or golden
+hübsch,,pretty
+sanft,,soft or gentle
+scheinbar,,apparent
+städtisch,,municipal
+wirksam,,effective
+akademisch,,academic
+beliebt,,popular
+experimentell,,experimental
+herzlich,,cordial or warm
+primär,,primary
+rechtzeitig,,punctual
+übel,,foul or bad
+ungewöhnlich,,unusual
+verständlich,,comprehensible
+vorübergehend,,temporary
+bequem,,comfortable
+ökologisch,,ecological or organic
+schlicht,,simple or plain
+unendlich,,endless
+vollkommen,,complete or perfect
+weiblich,,feminine
+abstrakt,,abstract
+attraktiv,,attractive
+ausdrücklich,,explicit
+dumm,,stupid
+geheim,,secret
+indirekt,,indirect
+intern,,internal
+lebendig,,living or lively
+relevant,,relevant
+subjektiv,,subjective
+analog,,analogous
+dynamisch,,dynamic
+heimlich,,secret
+kommunikativ,,communicative
+locker,,loose or relaxed
+mehrfach,,multiple
+moralisch,,moral
+potenziell,,potential
+prinzipiell,,principle
+problematisch,,problematic
+steil,,steep
+südlich,,southern
+akut,,acute or urgent
+ausgeprägt,,distinctive
+blöd,,stupid or dumb
+einig,,agreed
+jetzig,,current
+virtuell,,virtual
+wahnsinnig,,insane
+zugänglich,,accessible
+ausführlich,,detailed
+ausgezeichnet,,excellent or perfect
+außerordentlich,,extraordinary
+blind,,blind
+denkbar,,conceivable
+eigenständig,,independent
+feucht,,damp
+geistlich,,religious or spiritual
+hervorragend,,outstanding
+intellektuell,,intellectual
+konsequent,,consistent
+kontinuierlich,,constant or continuous
+korrekt,,correct
+materiell,,financial or material
+merkwürdig,,strange
+mündlich,,oral
+pädagogisch,,pedagogical
+psychisch,,psychological
+stellvertretend,,on behalf
+unsicher,,uncertain
+auswärtig,,from out of town
+beliebig,,any or as you like
+derzeitig,,current
+evangelisch,,protestant
+friedlich,,peaceful
+furchtbar,,terrible
+genetisch,,genetic
+methodisch,,methodical
+nachhaltig,,lasting or sustainable
+neugierig,,curious
+restlich,,remaining
+umstritten,,disputed
+verdächtig,,suspicious
+wunderschön,,wonderful or lovely
+effektiv,,effective
+einsam,,lonely or isolated
+gründlich,,thorough
+jahrelang,,lasting for years
+konstant,,constant
+langweilig,,boring
+liberal,,liberal
+logisch,,logical
+nervös,,nervous
+optisch,,optical
+organisch,,organic
+peinlich,,embarrassing
+schief,,crooked or not straight
+spontan,,spontaneous
+top,,top
+unzählig,,countless
+wertvoll,,valuable
+wütend,,furious
+bescheiden,,modest
+dauerhaft,,lasting
+deutschsprachig,,german-speaking
+flexibel,,flexible
+herrlich,,marvelous
+kirchlich,,ecclesiastical
+klug,,clever
+nachfolgend,,following
+süß,,sweet
+unangenehm,,unpleasant
+verfügbar,,available
+vorläufig,,temporary
+angewiesen,,dependent
+anstrengend,,exhausting
+behindert,,handicapped
+divers,,diverse or various
+einmalig,,unique or fantastic
+elegant,,elegant
+formal,,formal
+gültig,,valid
+klinisch,,clinical
+kreativ,,creative
+nützlich,,useful
+organisatorisch,,organizational
+schuldig,,guilty
+sexuell,,sexual
+stetig,,constant
+super,,super
+unklar,,unclear
+vergeblich,,futile
+anwesend,,present
+betrieblich,,operational
+bürgerlich,,civil or civic
+einheimisch,,native
+empfindlich,,sensitive
+extern,,external
+fröhlich,,cheerful
+großzügig,,generous
+heimisch,,indigenous or native or at home
+konventionell,,conventional
+linear,,linear
+mühsam,,strenuous or laborious
+nördlich,,northern
+professionell,,professional
+psychologisch,,psychological
+qualitativ,,qualitative
+reichlich,,plenty or generous
+schwanger,,pregnant
+strukturell,,structural
+stumm,,dumb or silent
+vermehrt,,increased
+zulässig,,permissible
+alltäglich,,daily or usual or ordinary
+beträchtlich,,considerable
+charakteristisch,,characteristic
+dankbar,,grateful
+dauernd,,constant or lasting
+detailliert,,detailed
+diskret,,discreet or confidential
+einseitig,,one-sided
+einverstanden,,to be in agreement
+fließend,,fluent
+kostenlos,,free of charge
+männlich,,male
+mechanisch,,mechanical
+medial,,by the media
+monatlich,,monthly
+örtlich,,local
+physisch,,physical
+präzise,,precise
+symbolisch,,symbolic
+treu,,faithful
+vermeintlich,,supposed
+vorig,,previous
+wach,,awake
+alternativ,,alternative
+ärztlich,,medical
+aufwendig,,extravagant or costly
+bemerkenswert,,remarkable
+besorgt,,concerned
+chronisch,,chronic
+düster,,gloomy
+effizient,,efficient
+emotional,,emotional
+erreichbar,,within reach or reachable
+gemütlich,,comfortable or cosy
+gespannt,,eager or anxious or tense
+intelligent,,intelligent
+landwirtschaftlich,,agricultural
+maßgeblich,,significant or decisive
+mobil,,mobile
+motorisch,,motor
+nass,,wet
+operativ,,operative
+philosophisch,,philosophical
+realistisch,,realistic
+sachlich,,objective or matter-of-fact
+überflüssig,,superfluous
+unsichtbar,,invisible
+verbindlich,,binding or friendly
+verlegen,,embarrassed
+voraussichtlich,,expected
+zwangsläufig,,inevitable
+anscheinend,,apparent
+auffällig,,conspicuous
+aufrecht,,upright or erect
+berufstätig,,employed or working
+blond,,blond
+drastisch,,drastic
+endlos,,endless or infinite
+erhältlich,,available
+explizit,,explicit
+fachlich,,specialist or informed
+fotografisch,,photographic
+gleichmäßig,,regular or even
+gleichsam,,as it were or so to speak
+identisch,,identical
+illegal,,illegal
+industriell,,industrial
+mild,,mild or gentle
+olympisch,,Olympic
+permanent,,permanent
+regelrecht,,proper or real
+spürbar,,perceptible
+starr,,stiff or rigid or paralyzed
+steuerlich,,tax
+tödlich,,fatal
+unverändert,,unchanged
+unverzüglich,,immediate or prompt
+unwahrscheinlich,,improbable or unlikely
+vertraglich,,contractual
+amtlich,,official
+außergewöhnlich,,unusual
+bedeutsam,,important or significant
+blass,,pale
+elementar,,elementary or basic
+flüchtig,,fugitive or cursory or fleeting
+gänzlich,,entirely
+kognitiv,,cognitive
+langjährig,,long-standing
+minimal,,minimal
+mutmaßlich,,presumed or suspected
+nachträglich,,later or belated
+naturwissenschaftlich,,scientific
+quantitativ,,quantitative
+schlank,,slim
+schulisch,,school
+strikt,,strict
+therapeutisch,,therapeutic
+unglücklich,,unhappy or unfortunate
+vorzeitig,,early or premature
+willkommen,,welcome
+zuverlässig,,reliable
+ästhetisch,,aesthetic
+bitter,,bitter
+einstig,,former
+fällig,,due
+flüssig,,liquid
+glänzend,,shining or brilliant
+harmlos,,harmless
+hässlich,,ugly
+hochwertig,,high-quality
+interkulturell,,intercultural
+ländlich,,rural
+nachdenklich,,thoughtful
+optimistisch,,optimistic
+schmutzig,,dirty
+schräg,,diagonal or at an angle
+unerwartet,,unexpected
+absurd,,absurd
+großartig,,splendid or superb
+hilflos,,helpless
+ostdeutsch,,East German
+östlich,,eastern
+radioaktiv,,radioactive
+solide,,solid or sound
+technologisch,,technological
+unerträglich,,intolerable
+westdeutsch,,West German
+zweifellos,,undoubtedly
