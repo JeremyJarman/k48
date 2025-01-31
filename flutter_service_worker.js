@@ -33,6 +33,7 @@ const RESOURCES = {"assets/AssetManifest.bin": "bb3946e0569be11c849666a381987376
 "assets/assets/FontManifest.json": "cf3c681641169319e61b61bd0277378f",
 "assets/assets/galaxy.jpg": "17960eb843d6739f59b0ccae282147d6",
 "assets/assets/GameOverFrame.svg": "0ec320fe10fdaadd5ea4c4aa99b46295",
+"assets/assets/manifest.json": "69ba61cc3cd6255ea3447bb6eafa3b5c",
 "assets/assets/Nexar2.jpg": "7c482b0f32da67b5c113b4ebff55e2f4",
 "assets/assets/NOTICES": "471d250a3afc8e9867d01ce1f700f925",
 "assets/assets/ranks/Explorer1.svg": "86bf7d96aa74f523669d83cacc77dadb",
@@ -69,7 +70,7 @@ const RESOURCES = {"assets/AssetManifest.bin": "bb3946e0569be11c849666a381987376
 "assets/assets/WordLists_04.csv": "cb4c9f503d5afd403c2a6b8fe556aa3c",
 "assets/FontManifest.json": "1b1e7812d9eb9f666db8444d7dde1b20",
 "assets/fonts/MaterialIcons-Regular.otf": "e7069dfd19b331be16bed984668fe080",
-"assets/NOTICES": "15b396dcccab5b6be8ca29bb16105e02",
+"assets/NOTICES": "3718be74ca3552bc238dc456d4c21170",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "b93248a553f9e8bc17f1065929d5934b",
 "assets/packages/material_design_icons_flutter/lib/fonts/materialdesignicons-webfont.ttf": "e9f2f143310604845f8aa26c42ad5f55",
 "assets/ranks/Explorer1.svg": "86bf7d96aa74f523669d83cacc77dadb",
@@ -116,7 +117,7 @@ const RESOURCES = {"assets/AssetManifest.bin": "bb3946e0569be11c849666a381987376
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
 "index.html": "48a6825b0d38c68d2874e9174433d4c3",
 "/": "48a6825b0d38c68d2874e9174433d4c3",
-"main.dart.js": "d4f97ee5ab06852921e12f28ab233ce6",
+"main.dart.js": "6c6bd7e6399d4e08fcf7dc5a7a309728",
 "version.json": "d4f7a4e38cf8c2166ca63e5ff6352955"};
 // The application shell files that are downloaded before a service worker can
 // start.
