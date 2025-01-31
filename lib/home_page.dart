@@ -43,52 +43,59 @@ class _MyHomePageState extends State<MyHomePage> {
     //var appState = context.watch<MyAppState>();
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Home'),
+        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.5),
+        elevation: 0,
+        title: Text('Home', style: TextStyle(fontSize: 16, color: Colors.white),),
         actions: [
-          PopupMenuButton<String>(
-            onSelected: (String result) {
-              if (result == 'Profile') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              } else if (result == 'Admin Panel') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AdminPanel()),
-                );
-              } else if (result == 'Leaderboard') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LeaderboardPage()),
-                );
-              } else if (result == 'Logout') {
-                FirebaseAuth.instance.signOut();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
-                value: 'Profile',
-                child: Text('Profile'),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert, color: Colors.white), // White three-dot icon
+                onSelected: (String result) {
+                  if (result == 'Profile') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfilePage()),
+                    );
+                  } else if (result == 'Admin Panel') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AdminPanel()),
+                    );
+                  } else if (result == 'Leaderboard') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LeaderboardPage()),
+                    );
+                  } else if (result == 'Logout') {
+                    FirebaseAuth.instance.signOut();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  const PopupMenuItem<String>(
+                    value: 'Profile',
+                    child: Text('Profile'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'Admin Panel',
+                    child: Text('Admin Panel'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'Leaderboard',
+                    child: Text('Leaderboard'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'Logout',
+                    child: Text('Logout'),
+                  ),
+                ],
               ),
-              const PopupMenuItem<String>(
-                value: 'Admin Panel',
-                child: Text('Admin Panel'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'Leaderboard',
-                child: Text('Leaderboard'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'Logout',
-                child: Text('Logout'),
-              ),
-            ],
           ),
         ],
       ),
@@ -104,9 +111,9 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                'Welcome to k48!',
-                style: TextStyle(fontSize: 24, color: Colors.white),
+               Text(
+                 'Welcome to k48!',
+                 style: TextStyle(fontSize: 24, color: Colors.white),
               ),
               SizedBox(height: 20),
               Container(

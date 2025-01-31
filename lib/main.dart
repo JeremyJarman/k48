@@ -2,13 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'login_page.dart'; // Import the login page
-import 'signup_page.dart';
-import 'splash_screen.dart';
-import 'home_page.dart'; // Import the extracted home page
 import 'auth_wrapper.dart'; // Import the auth wrapper
 import 'dataset_service.dart';
-import 'wortschatz_page.dart';
 import 'my_app_state.dart'; // Import MyAppState
 
 
@@ -43,15 +38,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => SplashScreen(),
-        '/login': (context) => LoginPage(),
-        '/signup': (context) => SignupPage(),
-        '/home': (context) => MyHomePage(),
-        '/wortschatz': (context) => WortschatzPage(),
-        '/auth': (context) => AuthWrapper(),
-      },
+      // initialRoute: '/',
+      // routes: {
+      //   '/': (context) => SplashScreen(),
+      //   '/login': (context) => LoginPage(),
+      //   '/signup': (context) => SignupPage(),
+      //   '/home': (context) => MyHomePage(),
+      //   '/wortschatz': (context) => WortschatzPage(),
+      //   '/auth': (context) => AuthWrapper(),
+      // },
+      home: AuthWrapper(),
     );
   }
 }

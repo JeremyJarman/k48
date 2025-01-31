@@ -42,6 +42,19 @@ class DatasetService extends ChangeNotifier {
     }
   }
 
+  Future<void> loadStateAtLogin(String uid) async {
+    final userID = uid;
+    final doc = await FirebaseFirestore.instance.collection('users').doc(userID).get();
+      if (doc.exists) {
+        final data = doc.data()!;
+        unlockedWortschatzDatasets = List<String>.from(data['unlockedDatasets'] ?? [allWortschatzDatasets.first['filename']]);
+        unlockedArticleDatasets = List<String>.from(data['unlockedArticleDatasets'] ?? [allArticleDatasets.first['filename']]);
+        datasetScores = Map<String, double>.from(data['datasetPassPercentages'] ?? {});
+        notifyListeners();
+      }
+    
+  }
+
   Future<void> _loadState() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {

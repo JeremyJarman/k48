@@ -6,6 +6,7 @@ import 'home_page.dart';
 import 'auth_wrapper.dart';
 import 'package:provider/provider.dart';
 import 'my_app_state.dart';
+import 'dataset_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,6 +29,11 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+      
+      // Use the loadState function from DatasetService
+      final datasetService = Provider.of<DatasetService>(context, listen: false);
+      await datasetService.loadStateAtLogin(userCredential.user!.uid);
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHomePage()),
@@ -38,6 +44,8 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
   }
+  
+  
 
   @override
   Widget build(BuildContext context) {

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
-//import 'csv_loader.dart';
 import 'my_app_state.dart';
 import 'add_health_button.dart';
-import 'noun_card.dart'; // Import the NounCard widget
-//import 'package:vibration/vibration.dart'; // Import vibration package
+import 'noun_card.dart'; 
 import 'end_screen.dart'; // Import the end screen
 import 'dataset_service.dart';
+//import 'csv_loader.dart';
+//import 'package:vibration/vibration.dart'; // Import vibration package
 
 class ArticlesGameplayScreen extends StatefulWidget {
   final String dataset;
@@ -90,9 +90,9 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
     if (isCorrect) {
       _correctAnswers++;
       _correctStreak++;
-      _mana = (_mana + 10).clamp(0, 100);
+      _mana = (_mana + 1).clamp(0, 10);
       if (_correctStreak >= 3) {
-        _healthPoints = (_healthPoints + 10).clamp(0, 100);
+        _healthPoints = (_healthPoints + 1).clamp(0, 100);
       }
       if (_currentIndex >= _data.length - 1) {
         _endGame(true);
@@ -289,7 +289,7 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
       bottomNavigationBar: BottomAppBar(
         color: Theme.of(context).primaryColor.withOpacity(0.6),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+          padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

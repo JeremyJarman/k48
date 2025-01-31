@@ -34,6 +34,7 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
   bool _showRedFlash = false;
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
+  
 
   @override
   void initState() {
@@ -49,7 +50,17 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
     ).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.elasticIn,
-    ));
+     ));
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _controller.reverse();
+      } else if (status == AnimationStatus.dismissed) {
+        setState(() {
+          _showRedFlash = false;
+        });
+      }
+    });
+
   }
 
   @override
@@ -69,9 +80,9 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
     if (isCorrect) {
       _correctAnswers++;
       _correctStreak++;
-      _mana = (_mana + 10).clamp(0, 100);
+      _mana = (_mana + 1).clamp(0, 10);
       if (_correctStreak >= 3) {
-        _healthPoints = (_healthPoints + 10).clamp(0, 100);
+        _healthPoints = (_healthPoints + 1).clamp(0, 100);
       }
       if (_currentIndex >= _data.length - 1) {
         _endGame(true);
@@ -85,12 +96,12 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
       _healthPoints = (_healthPoints - 10).clamp(0, 100);
       _mana = 0;
       _wrongAnswerIndices.add(_currentIndex);
+      _showRedFlash = true;
+      _controller.forward(from: 0);
       if (_healthPoints <= 0) {
         _endGame(false);
       } else {
-        setState(() {
-          _currentIndex++;
-        });
+        setState(() {});
       }
     }
   }
@@ -140,6 +151,10 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
       _showTranslations = !_showTranslations;
     });
   }
+
+
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -279,7 +294,7 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
       bottomNavigationBar: BottomAppBar(
         color: Theme.of(context).primaryColor.withOpacity(0.3),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
+          padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
