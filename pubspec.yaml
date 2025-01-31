@@ -38,7 +38,7 @@ flutter:
     - assets/ArticleNounPairs.csv
     - assets/galaxy.jpg
     - assets/WelcomeText.txt
-    - assets/Adjectives.csv
+    - assets/adjectives.csv
     - assets/GameOverFrame.svg
     - assets/stars.jpg
     - assets/Stars.csv
