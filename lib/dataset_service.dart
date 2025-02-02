@@ -42,6 +42,34 @@ class DatasetService extends ChangeNotifier {
     }
   }
 
+Future<void> uploadDatasetsToFirestore() async {
+  try {
+    for (var dataset in allWortschatzDatasets) {
+      final data = await loadCsv(dataset['filename']);
+      print('Uploading dataset: ${dataset['filename']}'); // Debug print
+      await FirebaseFirestore.instance
+          .collection('wortschatz_datasets')
+          .doc(dataset['filename'])
+          .set({'title': dataset['title'], 'elo': dataset['elo'], 'data': data});
+    }
+
+    for (var dataset in allArticleDatasets) {
+      final data = await loadCsv(dataset['filename']);
+      print('Uploading dataset: ${dataset['filename']}'); // Debug print
+      await FirebaseFirestore.instance
+          .collection('article_datasets')
+          .doc(dataset['filename'])
+          .set({'title': dataset['title'], 'elo': dataset['elo'], 'data': data});
+    }
+
+    print('Datasets uploaded successfully');
+  } catch (e) {
+    print('Error uploading datasets: $e');
+  }
+}
+
+
+
   Future<void> loadStateAtLogin(String uid) async {
     final userID = uid;
     final doc = await FirebaseFirestore.instance.collection('users').doc(userID).get();
