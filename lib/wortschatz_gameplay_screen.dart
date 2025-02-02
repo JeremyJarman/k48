@@ -71,7 +71,9 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
 
   Future<void> _loadData() async {
     final datasetService = Provider.of<DatasetService>(context, listen: false);
-    _data = await datasetService.loadCsv('assets/${widget.dataset}');
+    final path = 'assets/${widget.dataset}';
+    print('Loading dataset from path: $path'); // Debug print
+    _data = await datasetService.loadCsv(path);
     _data.shuffle();
     setState(() {});
   }
