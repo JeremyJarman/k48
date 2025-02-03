@@ -91,7 +91,7 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
   print('Loading adjectives from path: $path'); // Debug print
   try {
     final adjectivesData = await datasetService.loadCsv(path);
-    print('Adjectives loaded: $adjectivesData'); // Debug print
+    //print('Adjectives loaded: $adjectivesData'); // Debug print
     _adjectives = adjectivesData.map((row) => row[0].toString()).toList();
     setState(() {});
   } catch (e) {

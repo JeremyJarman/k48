@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'my_app_state.dart';
 import 'dataset_service.dart';
 import 'end_screen.dart';
@@ -71,11 +73,30 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
 
   Future<void> _loadData() async {
     final datasetService = Provider.of<DatasetService>(context, listen: false);
+    final prefs = await SharedPreferences.getInstance();
     final path = 'assets/${widget.dataset}';
     print('Loading dataset from path: $path'); // Debug print
-    _data = await datasetService.loadCsv(path);
-    _data.shuffle();
-    setState(() {});
+
+    try {
+      final localData = prefs.getString('Wortschatz_${widget.dataset}');
+      if (localData != null) {
+        List<Map<String, dynamic>> decodedData = List<Map<String, dynamic>>.from(json.decode(localData));
+        _data = decodedData.map((row) => row.values.toList()).toList();
+        print('Loaded dataset from local storage: ${widget.dataset}'); // Debug print
+      } else {
+        await datasetService.downloadWortschatzDatasetsFromFirestore();
+        final updatedLocalData = prefs.getString('Wortschatz_${widget.dataset}');
+        if (updatedLocalData != null) {
+          List<Map<String, dynamic>> decodedData = List<Map<String, dynamic>>.from(json.decode(updatedLocalData));
+          _data = decodedData.map((row) => row.values.toList()).toList();
+          print('Downloaded and loaded dataset: ${widget.dataset}'); // Debug print
+        }
+      }
+      _data.shuffle();
+      setState(() {});
+    } catch (e) {
+      print('Error loading dataset: $e'); // Debug print
+    }
   }
 
   void _onAnswerSelected(bool isCorrect) async {

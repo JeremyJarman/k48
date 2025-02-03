@@ -1,10 +1,10 @@
-//import 'package:shared_preferences/shared_preferences.dart';
-//import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
 
 class DatasetService extends ChangeNotifier {
   List<Map<String, dynamic>> allWortschatzDatasets = [
@@ -45,28 +45,126 @@ class DatasetService extends ChangeNotifier {
 Future<void> uploadDatasetsToFirestore() async {
   try {
     for (var dataset in allWortschatzDatasets) {
-      final data = await loadCsv(dataset['filename']);
+      final csvData = await loadCsv(dataset['filename']);
+      print('Attempting to load ${dataset['filename']}'); // Debug print
+      List<List<dynamic>> rows = csvData;
+
+      List<Map<String, String>> wortschatzRows = [];
+
+      for (var row in rows) {
+        final type = row[0] as String;
+        final prefix = row[1] as String;
+        final word = row[2] as String;
+        final suffix = row[3] as String;
+        final translation = row[4] as String;
+        final definition = row[5] as String;
+        final example = row[6] as String;
+
+        wortschatzRows.add({
+          'type': type,
+          'prefix': prefix,
+          'word': word,
+          'suffix': suffix,
+          'translation': translation,
+          'definition': definition,
+          'example': example,
+        });
+      }
+        await FirebaseFirestore.instance.collection('Wortschatz').doc(dataset['filename']).set({
+        'Wortschatz': wortschatzRows,
+      });
       print('Uploading dataset: ${dataset['filename']}'); // Debug print
-      await FirebaseFirestore.instance
-          .collection('wortschatz_datasets')
-          .doc(dataset['filename'])
-          .set({'title': dataset['title'], 'elo': dataset['elo'], 'data': data});
     }
 
     for (var dataset in allArticleDatasets) {
-      final data = await loadCsv(dataset['filename']);
+     final csvData = await loadCsv(dataset['filename']);
+      print('Attempting to load ${dataset['filename']}'); // Debug print
+      List<List<dynamic>> rows = csvData;
+
+      List<Map<String, String>> articleRows = [];
+
+      for (var row in rows) {
+        final index = row[0] as String;
+        final article = row[1] as String;
+        final noun = row[2] as String;
+        final translation = row[3] as String;
+      
+
+        articleRows.add({
+          'index': index,
+          'article': article,
+          'noun': noun,
+          'translation': translation,
+        });
+      }
+        await FirebaseFirestore.instance.collection('Articles').doc(dataset['filename']).set({
+        'Articles': articleRows,
+      });
       print('Uploading dataset: ${dataset['filename']}'); // Debug print
-      await FirebaseFirestore.instance
-          .collection('article_datasets')
-          .doc(dataset['filename'])
-          .set({'title': dataset['title'], 'elo': dataset['elo'], 'data': data});
     }
 
     print('Datasets uploaded successfully');
   } catch (e) {
-    print('Error uploading datasets: $e');
+    print('Error uploading datasets to firestore: $e');
   }
 }
+
+
+  Future<void> downloadWortschatzDatasetsFromFirestore() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      for (var dataset in allWortschatzDatasets) {
+        final localData = prefs.getString('Wortschatz_${dataset['filename']}');
+        if (localData != null) {
+          List<Map<String, String>> wortschatzRows = List<Map<String, String>>.from(json.decode(localData));
+          // Process the data as needed
+          print('Loaded dataset from local storage: ${dataset['filename']}'); // Debug print
+        } else {
+          final doc = await FirebaseFirestore.instance.collection('Wortschatz').doc(dataset['filename']).get();
+          if (doc.exists) {
+            final data = doc.data();
+            if (data != null) {
+              List<Map<String, String>> wortschatzRows = List<Map<String, String>>.from(data['Wortschatz']);
+              // Store the data locally
+              prefs.setString('Wortschatz_${dataset['filename']}', json.encode(wortschatzRows));
+              // Process the data as needed
+              print('Downloaded dataset: ${dataset['filename']}'); // Debug print
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print('Error downloading Wortschatz datasets: $e');
+    }
+  }
+
+  Future<void> downloadArticleDatasetsFromFirestore() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      for (var dataset in allArticleDatasets) {
+        final localData = prefs.getString('Articles_${dataset['filename']}');
+        if (localData != null) {
+          List<Map<String, String>> articleRows = List<Map<String, String>>.from(json.decode(localData));
+          // Process the data as needed
+          print('Loaded dataset from local storage: ${dataset['filename']}'); // Debug print
+        } else {
+          final doc = await FirebaseFirestore.instance.collection('Articles').doc(dataset['filename']).get();
+          if (doc.exists) {
+            final data = doc.data();
+            if (data != null) {
+              List<Map<String, String>> articleRows = List<Map<String, String>>.from(data['Articles']);
+              // Store the data locally
+              prefs.setString('Articles_${dataset['filename']}', json.encode(articleRows));
+              // Process the data as needed
+              print('Downloaded dataset: ${dataset['filename']}'); // Debug print
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print('Error downloading Article datasets: $e');
+    }
+  }
 
 
 

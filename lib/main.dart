@@ -14,8 +14,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform, // Ensure this line is present
   );
-  // final datasetService = DatasetService();
-  // await datasetService.uploadDatasetsToFirestore();
+   
+   final datasetService = DatasetService();
+   //await datasetService.uploadDatasetsToFirestore();
+   await datasetService.downloadWortschatzDatasetsFromFirestore();
+   await datasetService.downloadArticleDatasetsFromFirestore();
+   
 
   runApp(
     MultiProvider(
