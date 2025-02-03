@@ -89,13 +89,13 @@ class EndScreen extends StatelessWidget {
                       datasetPassed
                           ? 'Congratulations! You passed the dataset!'
                           : 'The ship was damaged beyond repair.',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      style: TextStyle(fontSize: 18, color: Colors.white),
                       textAlign: TextAlign.center,
                     ),
                   ),
                   SvgPicture.asset(
                     'assets/ranks/$rankBadge',
-                    height: 230,
+                    height: 150,
                   ),
                   Text(
                     '${currentRank['name']} $levelWithinRank',

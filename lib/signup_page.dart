@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'login_page.dart';
 
 
 class SignupPage extends StatefulWidget {
@@ -23,7 +24,10 @@ class _SignupPageState extends State<SignupPage> {
 
       await userCredential.user?.updateDisplayName(_nicknameController.text);
 
-      Navigator.pushReplacementNamed(context, '/quiz');
+      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = e.message ?? 'An error occurred';

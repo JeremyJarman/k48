@@ -353,10 +353,10 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
                 mana: _mana, 
                 onPressed: _addHealth
               ),
-              FloatingActionButton(
-                onPressed: _addScoreAndAdvance,
-                child: Icon(Icons.arrow_forward),
-              ),
+              //FloatingActionButton(
+              //  onPressed: _addScoreAndAdvance,
+              //  child: Icon(Icons.arrow_forward),
+              //),
               IconButton(
                 icon: Icon(_showTranslations ? Icons.translate : Icons.text_fields, 
                 color: Colors.white),
