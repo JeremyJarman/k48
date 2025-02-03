@@ -75,6 +75,7 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
   Future<void> _loadData() async {
     final datasetService = Provider.of<DatasetService>(context, listen: false);
     final path = 'assets/${widget.dataset}';
+    print('Loading dataset from path: $path'); // Debug print
     try {
       _data = await datasetService.loadCsv(path);
       _data.shuffle();
