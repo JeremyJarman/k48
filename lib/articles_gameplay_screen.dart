@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 import 'my_app_state.dart';
 import 'add_health_button.dart';
@@ -74,15 +76,40 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
 
   Future<void> _loadData() async {
     final datasetService = Provider.of<DatasetService>(context, listen: false);
+    final prefs = await SharedPreferences.getInstance();
     final path = 'assets/${widget.dataset}';
     print('Loading dataset from path: $path'); // Debug print
+
     try {
-      _data = await datasetService.loadCsv(path);
+      final localData = prefs.getString('Articles_${widget.dataset}');
+      if (localData != null) {
+        List<Map<String, dynamic>> decodedData = List<Map<String, dynamic>>.from(json.decode(localData));
+        _data = decodedData.map((row) => [
+          row['index'],
+          row['article'],
+          row['noun'],
+          row['translation']
+        ]).toList();
+        print('Loaded dataset from local storage: ${widget.dataset}'); // Debug print
+      } else {
+        await datasetService.downloadArticleDatasetsFromFirestore();
+        final updatedLocalData = prefs.getString('Articles_${widget.dataset}');
+        if (updatedLocalData != null) {
+          List<Map<String, dynamic>> decodedData = List<Map<String, dynamic>>.from(json.decode(updatedLocalData));
+          _data = decodedData.map((row) => [
+            row['index'],
+            row['article'],
+            row['noun'],
+            row['translation']
+          ]).toList();
+          print('Downloaded and loaded dataset: ${widget.dataset}'); // Debug print
+        }
+      }
       _data.shuffle();
       setState(() {});
     } catch (e) {
-      print('Error loading dataset: $e');
-    }     
+      print('Error loading dataset: $e'); // Debug print
+    }
   }
 
   Future<void> _loadAdjectives() async {

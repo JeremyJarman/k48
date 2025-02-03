@@ -1,22 +1,21 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:german_nouns_app/my_app_state.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'my_app_state.dart';
 import 'dataset_service.dart';
 import 'end_screen.dart';
 import 'add_health_button.dart';
 
 class WortschatzGameplayScreen extends StatefulWidget {
   final String dataset;
+  final Function onDatasetCompleted;
   final String title;
-  final void Function(int) onDatasetCompleted;
 
   WortschatzGameplayScreen({
     required this.dataset,
-    required this.onDatasetCompleted, 
+    required this.onDatasetCompleted,
     required this.title,
-    
   });
 
   @override
@@ -81,14 +80,30 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
       final localData = prefs.getString('Wortschatz_${widget.dataset}');
       if (localData != null) {
         List<Map<String, dynamic>> decodedData = List<Map<String, dynamic>>.from(json.decode(localData));
-        _data = decodedData.map((row) => row.values.toList()).toList();
+        _data = decodedData.map((row) => [
+          row['type'],
+          row['prefix'],
+          row['word'],
+          row['suffix'],
+          row['translation'],
+          row['definition'],
+          row['example']
+        ]).toList();
         print('Loaded dataset from local storage: ${widget.dataset}'); // Debug print
       } else {
         await datasetService.downloadWortschatzDatasetsFromFirestore();
         final updatedLocalData = prefs.getString('Wortschatz_${widget.dataset}');
         if (updatedLocalData != null) {
           List<Map<String, dynamic>> decodedData = List<Map<String, dynamic>>.from(json.decode(updatedLocalData));
-          _data = decodedData.map((row) => row.values.toList()).toList();
+          _data = decodedData.map((row) => [
+            row['type'],
+            row['prefix'],
+            row['word'],
+            row['suffix'],
+            row['translation'],
+            row['definition'],
+            row['example']
+          ]).toList();
           print('Downloaded and loaded dataset: ${widget.dataset}'); // Debug print
         }
       }
@@ -130,7 +145,7 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
   }
 
   void _endGame(bool datasetPassed) async {
-    final datasetService = Provider.of<DatasetService>(context, listen: false);
+    //final datasetService = Provider.of<DatasetService>(context, listen: false);
     final appState = Provider.of<MyAppState>(context, listen: false);
     final eloChange = (_correctAnswers / _data.length * 100).round();
     appState.updateElo(appState.elo + eloChange);

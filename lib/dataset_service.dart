@@ -117,12 +117,15 @@ Future<void> uploadDatasetsToFirestore() async {
         final localData = prefs.getString('Wortschatz_${dataset['filename']}');
         if (localData != null) {
           List<Map<String, String>> wortschatzRows = List<Map<String, String>>.from(json.decode(localData));
-          // Process the data as needed
           print('Loaded dataset from local storage: ${dataset['filename']}'); // Debug print
         } else {
           final doc = await FirebaseFirestore.instance.collection('Wortschatz').doc(dataset['filename']).get();
           if (doc.exists) {
             final data = doc.data();
+
+
+
+
             if (data != null) {
               List<Map<String, String>> wortschatzRows = List<Map<String, String>>.from(data['Wortschatz']);
               // Store the data locally

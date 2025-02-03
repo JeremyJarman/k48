@@ -60,15 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       MaterialPageRoute(builder: (context) => ProfilePage()),
                     );
                   } else if (result == 'Admin Panel') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AdminPanel()),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => AdminPanel()),
+                    // );
                   } else if (result == 'Leaderboard') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LeaderboardPage()),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => LeaderboardPage()),
+                    // );
                   } else if (result == 'Logout') {
                     FirebaseAuth.instance.signOut();
                     Navigator.pushReplacement(
