@@ -258,7 +258,7 @@ packages:
     source: hosted
     version: "2.19.0"
   firebase_storage:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: firebase_storage
       sha256: c5bf4b741a67f6208e5433bfbaa7831f85d6b6d9c6ef3ceb4e48984ec5940482
@@ -417,7 +417,7 @@ packages:
     source: hosted
     version: "0.11.1"
   material_design_icons_flutter:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: material_design_icons_flutter
       sha256: "6f986b7a51f3ad4c00e33c5c84e8de1bdd140489bbcdc8b66fc1283dad4dea5a"
@@ -657,10 +657,10 @@ packages:
     dependency: transitive
     description:
       name: vector_graphics
-      sha256: "7ed22c21d7fdcc88dd6ba7860384af438cd220b251ad65dfc142ab722fabef61"
+      sha256: a1870d398158844fe5db12441611ed9a2222ff4340258b539eaf3590c1b4bd7e
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.16"
+    version: "1.1.17"
   vector_graphics_codec:
     dependency: transitive
     description:
