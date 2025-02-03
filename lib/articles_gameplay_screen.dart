@@ -74,17 +74,29 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
 
   Future<void> _loadData() async {
     final datasetService = Provider.of<DatasetService>(context, listen: false);
-    _data = await datasetService.loadCsv('assets/${widget.dataset}');
-    _data.shuffle();
-    setState(() {});
+    final path = 'assets/${widget.dataset}';
+    try {
+      _data = await datasetService.loadCsv(path);
+      _data.shuffle();
+      setState(() {});
+    } catch (e) {
+      print('Error loading dataset: $e');
+    }     
   }
 
   Future<void> _loadAdjectives() async {
-    final datasetService = Provider.of<DatasetService>(context, listen: false);
-    final adjectivesData = await datasetService.loadCsv('assets/adjectives.csv');
+  final datasetService = Provider.of<DatasetService>(context, listen: false);
+  final path = 'assets/adjectives.csv';
+  print('Loading adjectives from path: $path'); // Debug print
+  try {
+    final adjectivesData = await datasetService.loadCsv(path);
+    print('Adjectives loaded: $adjectivesData'); // Debug print
     _adjectives = adjectivesData.map((row) => row[0].toString()).toList();
     setState(() {});
+  } catch (e) {
+    print('Error loading adjectives: $e'); // Debug print
   }
+}
 
   void _onAnswerSelected(bool isCorrect) async {
     if (isCorrect) {
