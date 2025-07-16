@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
 class WortschatzReviewScreen extends StatelessWidget {
-  final int wrongAnswers;
   final List<int> wrongAnswerIndices;
   final List<List<dynamic>> data;
 
   WortschatzReviewScreen({
-    required this.wrongAnswers,
     required this.wrongAnswerIndices,
     required this.data,
   });
@@ -14,50 +12,70 @@ class WortschatzReviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Review Incorrect Answers'),
         backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
+        title: Text('Wortschatz Review',style: TextStyle( color: Colors.white),),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/galaxy.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: ListView.builder(
-          itemCount: wrongAnswerIndices.length,
-          itemBuilder: (context, index) {
-            final wordIndex = wrongAnswerIndices[index];
-            final wordData = data[wordIndex];
-            final word = wordData[2];
-            final correctDefinition = wordData[5];
-            final correctTranslation = wordData[4];
-
-            return Card(
-              color: Theme.of(context).primaryColor.withOpacity(0.3),
-              child: ListTile(
-                title: Text(
-                  word,
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Definition: $correctDefinition',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Text(
-                      'Translation: $correctTranslation',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/galaxy.jpg'),
+                fit: BoxFit.cover,
               ),
-            );
-          },
-        ),
+            ),
+          ),
+          ListView.builder(
+            padding: const EdgeInsets.only(top: 80),
+            itemCount: wrongAnswerIndices.length,
+            itemBuilder: (context, idx) {
+              final i = wrongAnswerIndices[idx];
+              final row = data[i];
+              final wordType = row[0].toString();
+              final prefix = row[1].toString();
+              final word = row[2].toString();
+              final suffix = row[3].toString();
+              final translation = row[4].toString();
+              final definition = row[5].toString();
+              return Card(
+                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        wordType,
+                        style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.white),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        prefix.isNotEmpty
+                          ? (suffix.isNotEmpty ? '$prefix $word ($suffix)' : '$prefix $word')
+                          : (suffix.isNotEmpty ? '$word ($suffix)' : word),
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        'Definition: $definition',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        'Translation: $translation',
+                        style: TextStyle(fontSize: 16, color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

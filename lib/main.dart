@@ -2,36 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'auth_wrapper.dart'; // Import the auth wrapper
-import 'dataset_service.dart';
 import 'my_app_state.dart'; // Import MyAppState
-
-
+import 'landing_page.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform, // Ensure this line is present
+    options: DefaultFirebaseOptions.currentPlatform,
   );
    
-   final datasetService = DatasetService();
-   //await datasetService.uploadDatasetsToFirestore();
-   await datasetService.downloadWortschatzDatasetsFromFirestore();
-   await datasetService.downloadArticleDatasetsFromFirestore();
-   
-
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => MyAppState()), // Add MyAppState provider
-        ChangeNotifierProvider(create: (_) => DatasetService()), // Use Provider instead of ChangeNotifierProvider
-      ],
-      child: MyApp(),
+    ChangeNotifierProvider(
+      create: (_) => MyAppState(),
+      child: Builder(
+        builder: (context) => MyApp(),
+      ),
     ),
   );
-
- 
 }
 
 void customPrint(Object? object) => debugPrint(object.toString());
@@ -40,10 +28,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'k48 deployment test',
+      title: 'k48',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepPurple,
       ),
+      home: LandingPage(),
       // initialRoute: '/',
       // routes: {
       //   '/': (context) => SplashScreen(),
@@ -53,7 +42,7 @@ class MyApp extends StatelessWidget {
       //   '/wortschatz': (context) => WortschatzPage(),
       //   '/auth': (context) => AuthWrapper(),
       // },
-      home: AuthWrapper(),
+      // home: AuthWrapper(),
     );
   }
 }

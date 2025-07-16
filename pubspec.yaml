@@ -22,6 +22,8 @@ dependencies:
   shared_preferences: ^2.0.13
   cupertino_icons: ^1.0.2
   material_design_icons_flutter: ^7.0.7296  # Include in main dependencies
+  confetti: ^0.8.0
+  flutter_svg: ^2.0.9
 
 dev_dependencies:
   flutter_test:
@@ -29,7 +31,6 @@ dev_dependencies:
   flutter_lints: ^5.0.0  # Ensure compatibility with Dart SDK
   flutter_launcher_icons: ^0.14.1
   flutter_native_splash: ^2.2.16
-  flutter_svg: ^2.0.0
   random_avatar: ^0.0.8
 
 flutter:
@@ -90,3 +91,15 @@ flutter:
     - assets/WordLists_03.csv
     - assets/WordLists_04.csv
     - assets/manifest.json
+    - assets/v1.csv
+    - assets/v2.csv
+    - assets/v3.csv
+    - assets/v4.csv
+    - assets/v5.csv
+    - assets/v6.csv
+    - assets/v7.csv
+    - assets/v8.csv
+    - assets/v9.csv
+    - assets/v10.csv
+    - assets/v11.csv
+

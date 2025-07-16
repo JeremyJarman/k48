@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'my_app_state.dart';
 
 class HealthPointsIndicator extends StatelessWidget {
+  const HealthPointsIndicator({super.key});
+
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();

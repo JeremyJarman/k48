@@ -1,225 +1,164 @@
 import 'package:flutter/material.dart';
-//import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:flutter_svg/flutter_svg.dart';
-//import 'my_app_state.dart';
-//import 'profile_page.dart'; // Import ProfilePage for getRankBadge method
+import 'package:firebase_auth/firebase_auth.dart';
+import 'my_app_state.dart';
 
-class LeaderboardPage extends StatefulWidget {
-  @override
-  _LeaderboardPageState createState() => _LeaderboardPageState();
-}
-
-class _LeaderboardPageState extends State<LeaderboardPage> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  final double _textSize = 18.0; // Hardcoded text size
-  final double _textSizeHeading = 14.0;
-
-  String getRankBadge(String rank, String level) {
-    return 'assets/ranks/${rank}${level}.svg';
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+class LeaderboardPage extends StatelessWidget {
+  const LeaderboardPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    //var appState = context.watch<MyAppState>();
-
+    final currentUser = FirebaseAuth.instance.currentUser;
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Leaderboard'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(text: 'Easy'),
-            Tab(text: 'Intermediate'),
-            Tab(text: 'Hardcore'),
-          ],
-        ),
+        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
+        title: Text('Leaderboard', style: TextStyle(color: Colors.white)),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/stars.jpg'),
-            fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/galaxy.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
-        ),
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildLeaderboard(context, 'Nouns_easy'),
-            _buildLeaderboard(context, 'Nouns_intermediate'),
-            _buildLeaderboard(context, 'Nouns_hardcore'),
-          ],
-        ),
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .orderBy('elo', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error loading leaderboard', style: TextStyle(color: Colors.white)));
+              }
+              final users = snapshot.data?.docs ?? [];
+              if (users.isEmpty) {
+                return Center(child: Text('No users found.', style: TextStyle(color: Colors.white)));
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.only(top: 90, bottom: 16),
+                itemCount: users.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    // Header row
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Row(
+                        children: [
+                          SizedBox(width: 32, child: Text('#', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold))),
+                          Expanded(flex: 2, child: Text('Alias', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold))),
+                          SizedBox(width: 60, child: Text('ELO', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold))),
+                          Expanded(child: Text('Rank', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold))),
+                        ],
+                      ),
+                    );
+                  }
+                  final user = users[index - 1];
+                  final elo = (user['elo'] ?? 0) as int;
+                  final alias = user['alias'] ?? 'Unknown';
+                  final uid = user.id;
+                  final isCurrentUser = currentUser != null && currentUser.uid == uid;
+                  final rankName = MyAppState().getRank(elo);
+                  final levelWithinRank = (() {
+                    for (var rank in MyAppState.ranks) {
+                      if (elo >= rank['minElo'] && elo <= rank['maxElo']) {
+                        int range = rank['maxElo'] - rank['minElo'] + 1;
+                        int levelRange = range ~/ 3;
+                        if (elo < rank['minElo'] + levelRange) return 1;
+                        if (elo < rank['minElo'] + 2 * levelRange) return 2;
+                        return 3;
+                      }
+                    }
+                    return 0;
+                  })();
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isCurrentUser
+                          ? Theme.of(context).primaryColor.withOpacity(0.5)
+                          : Theme.of(context).primaryColor.withOpacity(0.25),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 32,
+                            child: Text(
+                              '${index}',
+                              style: TextStyle(
+                                color: isCurrentUser ? Colors.amber : Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              alias,
+                              style: TextStyle(
+                                color: isCurrentUser ? Colors.amber : Colors.white,
+                                fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.normal,
+                                fontSize: 18,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 60,
+                            child: Text(
+                              '$elo',
+                              style: TextStyle(
+                                color: isCurrentUser ? Colors.amber : Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              '$rankName $levelWithinRank',
+                              style: TextStyle(
+                                color: isCurrentUser ? Colors.amber : Colors.white70,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildLeaderboard(BuildContext context, String documentId) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('scores').doc(documentId).snapshots(),
-      builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        var data = snapshot.data!.data() as Map<String, dynamic>;
-        var scores = data.entries.toList();
-        scores.sort((a, b) => b.value.compareTo(a.value));
-
-        if (scores.isEmpty) {
-          return Center(child: Text('No data available', style: TextStyle(color: Colors.white, fontSize: _textSize)));
-        }
-
-        List<TableRow> rows = [
-          TableRow(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Color(0xFFD9D9D9)),
-              ),
-            ),
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Align(alignment: Alignment.center, child: Text('RANK', style: TextStyle(color: Colors.white, fontSize: _textSizeHeading))),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Align(alignment: Alignment.center, child: Text('ALIAS', style: TextStyle(color: Colors.white, fontSize: _textSizeHeading))),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Align(alignment: Alignment.center, child: Text('ELO', style: TextStyle(color: Colors.white,  fontSize: _textSizeHeading))),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Align(alignment: Alignment.center, child: Text('DISTANCE', style: TextStyle(color: Colors.white, fontSize: _textSizeHeading))),
-              ),
-            ],
-          ),
-        ];
-
-        for (var index = 0; index < scores.length; index++) {
-          rows.add(
-            TableRow(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: Color(0xFFD9D9D9)),
-                ),
-              ),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      '${index + 1}',
-                      style: TextStyle(color: Colors.white, fontSize: _textSize),
-                    ),
-                  ),
-                ),
-                FutureBuilder<DocumentSnapshot>(
-                  future: FirebaseFirestore.instance.collection('users').doc(scores[index].key).get(),
-                  builder: (context, userSnapshot) {
-                    if (!userSnapshot.hasData) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Align(alignment: Alignment.center, child: Text('Loading...', style: TextStyle(color: Colors.white, fontSize: _textSize))),
-                      );
-                    }
-                    var userData = userSnapshot.data!.data() as Map<String, dynamic>;
-                    //var elo = userData['elo'] ?? 0;
-                    //var rank = MyAppState().getRankFromElo(elo);
-                    //var level = MyAppState().getLevelFromElo(elo);
-                    //var rankBadge = getRankBadge(rank, level);
-
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                          //  SvgPicture.asset(
-                              
-                           //   width: 30,
-                           //   height: 30,
-                          //  ),
-                            SizedBox(width: 8),
-                            Text(
-                              userData['alias'] ?? 'Anonymous',
-                              style: TextStyle(color: Colors.white, fontSize: _textSize),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                FutureBuilder<DocumentSnapshot>(
-                  future: FirebaseFirestore.instance.collection('users').doc(scores[index].key).get(),
-                  builder: (context, userSnapshot) {
-                    if (!userSnapshot.hasData) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Align(alignment: Alignment.center, child: Text('Loading...', style: TextStyle(color: Colors.white, fontSize: _textSize))),
-                      );
-                    }
-                    var userData = userSnapshot.data!.data() as Map<String, dynamic>;
-                    var elo = userData['elo'] ?? 0;
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          '$elo',
-                          style: TextStyle(color: Colors.white, fontSize: _textSize),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      '${scores[index].value} ly',
-                      style: TextStyle(color: Colors.white, fontSize: _textSize),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return SingleChildScrollView(
-          child: Table(
-            border: TableBorder(
-              horizontalInside: BorderSide(color: Color(0xFFD9D9D9)),
-            ),
-            columnWidths: {
-              0: FlexColumnWidth(1),
-              1: FlexColumnWidth(2),
-              2: FlexColumnWidth(1),
-              3: FlexColumnWidth(2),
-            },
-            children: rows,
-          ),
-        );
-      },
-    );
+extension MyAppStateRankBadge on MyAppState {
+  // Helper to get badge for any ELO (without mutating state)
+  String? getRankBadgeForElo(int elo) {
+    for (var rank in MyAppState.ranks) {
+      if (elo >= rank['minElo'] && elo <= rank['maxElo']) {
+        final levelWithinRank = ((elo - rank['minElo']) / 100).floor() + 1;
+        return '${rank['name']}$levelWithinRank.svg';
+      }
+    }
+    return null;
   }
 }

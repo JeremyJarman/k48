@@ -6,55 +6,61 @@ class ArticlesReviewPage extends StatefulWidget {
   final List<int> wrongAnswerIndices;
   final List<List<dynamic>> data;
 
-  ArticlesReviewPage({
+  const ArticlesReviewPage({
+    super.key,
     required this.wrongAnswerIndices,
     required this.data,
   });
 
   @override
-  _ArticlesReviewPageState createState() => _ArticlesReviewPageState();
+  ArticlesReviewPageState createState() => ArticlesReviewPageState();
 }
 
-class _ArticlesReviewPageState extends State<ArticlesReviewPage> {
+class ArticlesReviewPageState extends State<ArticlesReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
-        title: Text(
-          'Articles Review',
-          style: TextStyle(color: Colors.white),
-        ),
-        iconTheme: IconThemeData(color: Colors.white), // Set back arrow color to white
+        title: Text('Articles Review'),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/galaxy.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: widget.wrongAnswerIndices.isEmpty
-            ? Center(child: Text('No incorrect answers to review.', style: TextStyle(color: Colors.white, fontSize: 20)))
-            : ListView.builder(
-                itemCount: widget.wrongAnswerIndices.length,
-                itemBuilder: (context, index) {
-                  final wordIndex = widget.wrongAnswerIndices[index];
-                  final wordData = widget.data[wordIndex];
-                  final noun = wordData[2]; // Assuming the noun is in the first column
-                  final article = wordData[1]; // Assuming the article is in the second column
-
-                  return Card(
-                    color: Theme.of(context).primaryColor.withOpacity(0.3),
-                    child: ListTile(
-                      title: Text(
-                        '$article $noun',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ),
-                  );
-                },
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/galaxy.jpg'),
+                fit: BoxFit.cover,
               ),
+            ),
+          ),
+          ListView.builder(
+            padding: const EdgeInsets.only(top: 80),
+            itemCount: widget.wrongAnswerIndices.length,
+            itemBuilder: (context, idx) {
+              final i = widget.wrongAnswerIndices[idx];
+              final row = widget.data[i];
+              final article = row[0].toString();
+              final noun = row[1].toString();
+              final translation = row[2].toString();
+              return Card(
+                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: ListTile(
+                  title: Text(
+                    '$article $noun',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    translation,
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

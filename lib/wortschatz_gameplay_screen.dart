@@ -1,40 +1,41 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:german_nouns_app/my_app_state.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dataset_service.dart';
-import 'end_screen.dart';
+import 'my_app_state.dart';
 import 'add_health_button.dart';
+import 'end_screen.dart';
+import 'dart:developer' as developer;
+import 'dataset_service.dart'; // For DatasetType enum
 
 class WortschatzGameplayScreen extends StatefulWidget {
   final String dataset;
   final Function onDatasetCompleted;
   final String title;
 
-  WortschatzGameplayScreen({
+  const WortschatzGameplayScreen({
+    super.key,
     required this.dataset,
     required this.onDatasetCompleted,
     required this.title,
   });
 
   @override
-  _WortschatzGameplayScreenState createState() => _WortschatzGameplayScreenState();
+  WortschatzGameplayScreenState createState() => WortschatzGameplayScreenState();
 }
 
-class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> with SingleTickerProviderStateMixin {
+class WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> with SingleTickerProviderStateMixin {
   List<List<dynamic>> _data = [];
   int _currentIndex = 0;
   int _healthPoints = 100;
   int _correctStreak = 0;
   int _correctAnswers = 0;
   int _mana = 0;
-  List<int> _wrongAnswerIndices = [];
+  final List<int> _wrongAnswerIndices = [];
   final List<String> _letters = ['A', 'B', 'C', 'D', 'E'];
   bool _showTranslations = false;
   bool _showRedFlash = false;
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
+  final DatasetType datasetType = DatasetType.wortschatz;
   
 
   @override
@@ -71,46 +72,18 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
   }
 
   Future<void> _loadData() async {
-    final datasetService = Provider.of<DatasetService>(context, listen: false);
-    final prefs = await SharedPreferences.getInstance();
+    final datasetService = Provider.of<MyAppState>(context, listen: false).datasetService;
     final path = 'assets/${widget.dataset}';
-    print('Loading dataset from path: $path'); // Debug print
+    developer.log('Loading dataset from path: $path');
 
     try {
-      final localData = prefs.getString('Wortschatz_${widget.dataset}');
-      if (localData != null) {
-        List<Map<String, dynamic>> decodedData = List<Map<String, dynamic>>.from(json.decode(localData));
-        _data = decodedData.map((row) => [
-          row['type'],
-          row['prefix'],
-          row['word'],
-          row['suffix'],
-          row['translation'],
-          row['definition'],
-          row['example']
-        ]).toList();
-        print('Loaded dataset from local storage: ${widget.dataset}'); // Debug print
-      } else {
-        await datasetService.downloadWortschatzDatasetsFromFirestore();
-        final updatedLocalData = prefs.getString('Wortschatz_${widget.dataset}');
-        if (updatedLocalData != null) {
-          List<Map<String, dynamic>> decodedData = List<Map<String, dynamic>>.from(json.decode(updatedLocalData));
-          _data = decodedData.map((row) => [
-            row['type'],
-            row['prefix'],
-            row['word'],
-            row['suffix'],
-            row['translation'],
-            row['definition'],
-            row['example']
-          ]).toList();
-          print('Downloaded and loaded dataset: ${widget.dataset}'); // Debug print
-        }
-      }
+      final csvData = await datasetService.loadCsv(path);
+      _data = csvData;
       _data.shuffle();
       setState(() {});
+      developer.log('Loaded dataset from assets: ${widget.dataset}');
     } catch (e) {
-      print('Error loading dataset: $e'); // Debug print
+      developer.log('Error loading dataset: $e');
     }
   }
 
@@ -123,7 +96,7 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
         _healthPoints = (_healthPoints + 1).clamp(0, 100);
       }
       if (_currentIndex >= _data.length - 1) {
-        _endGame(true);
+        _endGame();
       } else {
         setState(() {
           _currentIndex++;
@@ -137,31 +110,35 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
       _showRedFlash = true;
       _controller.forward(from: 0);
       if (_healthPoints <= 0) {
-        _endGame(false);
+        _endGame();
       } else {
         setState(() {});
       }
     }
   }
 
-  void _endGame(bool datasetPassed) async {
-    //final datasetService = Provider.of<DatasetService>(context, listen: false);
+  void _endGame() async {
     final appState = Provider.of<MyAppState>(context, listen: false);
-    final eloChange = (_correctAnswers / _data.length * 100).round();
-    appState.updateElo(appState.elo + eloChange);
-    appState.updateDatasetPassPercentage(widget.dataset, (_correctAnswers / _data.length * 100).toDouble());
-    widget.onDatasetCompleted((_correctAnswers / _data.length * 100).round());
+    final uniqueWrongIndices = _wrongAnswerIndices.toSet().toList();
+    final uniqueWrongCount = uniqueWrongIndices.length;
+    final firstAttemptCorrect = _correctAnswers - uniqueWrongCount;
+    final percent = ((firstAttemptCorrect / _data.length) * 100).clamp(0, 100).toDouble();
+    final percentRounded = percent.roundToDouble();
+    final currentElo = appState.elo;
+    final datasetPassed = percentRounded > 50.0;
+    print('DEBUG: Wortschatz_GamePlay endGame: correctAnswers=$_correctAnswers, uniqueWrongCount=$uniqueWrongCount, firstAttemptCorrect=$firstAttemptCorrect, percent=$percentRounded, currentElo=$currentElo, datasetPassed=$datasetPassed');
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => EndScreen(
           datasetPassed: datasetPassed,
           correctAnswers: _correctAnswers,
-          wrongAnswerIndices: _wrongAnswerIndices,
+          uniqueWrongIndices: uniqueWrongIndices,
+          percent: percentRounded,
+          currentElo: currentElo,
           data: _data,
-          isArticleReview: false,
-          eloChange: eloChange,
           datasetName: widget.dataset,
+          datasetType: datasetType,
         ),
       ),
     );
@@ -174,15 +151,6 @@ class _WortschatzGameplayScreenState extends State<WortschatzGameplayScreen> wit
     });
   }
 
-  void _addScoreAndAdvance() async {
-    _correctStreak += 10;
-    _currentIndex = (_currentIndex + 10).clamp(0, _data.length - 1);
-    if (_currentIndex >= _data.length) {
-      _endGame(true);
-    } else {
-      setState(() {});
-    }
-  }
 
   void _toggleTranslations() {
     setState(() {

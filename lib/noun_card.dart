@@ -5,8 +5,9 @@ class NounCard extends StatelessWidget {
   final String noun;
   final String? selectedArticle;
   final String? adjective;
+  final Color? highlightColor;
 
-  NounCard({required this.noun, required this.selectedArticle, required this.adjective});
+  NounCard({required this.noun, required this.selectedArticle, required this.adjective, this.highlightColor});
 
 
 
@@ -144,19 +145,30 @@ class NounCard extends StatelessWidget {
     return Card(
       color: Theme.of(context).primaryColor.withOpacity(0.3), // Set the background color to be 60% transparent
       child: Container(
-        width: 300, // Set a fixed width
+        width: 300,
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              '${selectedArticle ?? ''} $noun',
-              style: TextStyle(fontSize: 24, color: Colors.white), // Set text color to white for better contrast
+            Center(
+              child: Text(
+                '${selectedArticle ?? ''} $noun',
+                style: TextStyle(fontSize: 40, color: highlightColor ?? Colors.white),
+                textAlign: TextAlign.center,
+              ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 12),
+            Container(
+              width: 0.9 * 300, // 90% of card width
+              height: 2,
+              color: Colors.white,
+            ),
+            SizedBox(height: 16),
             Text(
               '(N) d$nominativeBestimmtEnding $randomAdjective$nominativeBestimmtAEnding $noun',
               style: TextStyle(fontSize: 16, color: Colors.white),
+              textAlign: TextAlign.left,
             ),
             //Text(
             //  '(N) ein$nominativeUnbestimmtEnding $randomAdjective$nominativeUnbestimmtAEnding $noun',
@@ -166,11 +178,13 @@ class NounCard extends StatelessWidget {
             Text(
               '(D) mit ein$dativeUnbestimmtEnding $randomAdjective$dativeUnbestimmtAEnding $noun',
               style: TextStyle(fontSize: 16, color: Colors.white),
+              textAlign: TextAlign.left,
             ),
             SizedBox(height: 10),
             Text(
               '(A) für d$accusativeBestimmtEnding $randomAdjective$accusativeBestimmtAEnding $noun',
               style: TextStyle(fontSize: 16, color: Colors.white),
+              textAlign: TextAlign.left,
             ),
           ],
         ),

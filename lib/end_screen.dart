@@ -1,53 +1,113 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:german_nouns_app/home_page.dart';
+import 'home_page.dart';
 import 'package:provider/provider.dart';
 import 'my_app_state.dart';
 import 'wortschatz_review.dart';
 import 'articles_review.dart';
+import 'verbs_review.dart';
+import 'dataset_service.dart'; // For DatasetType enum
 
-class EndScreen extends StatelessWidget {
+class EndScreen extends StatefulWidget {
   final bool datasetPassed;
   final int correctAnswers;
-  final List<int> wrongAnswerIndices;
+  final List<int> uniqueWrongIndices;
+  final double percent;
+  final int currentElo;
   final List<List<dynamic>> data;
-  final bool isArticleReview;
-  final int eloChange;
-  final String datasetName; // Add datasetName parameter
+  final DatasetType datasetType;
+  final String datasetName;
 
-  EndScreen({
+  const EndScreen({
+    super.key,
     required this.datasetPassed,
     required this.correctAnswers,
-    required this.wrongAnswerIndices,
+    required this.uniqueWrongIndices,
+    required this.percent,
+    required this.currentElo,
     required this.data,
-    this.isArticleReview = false, // Default to false for wortschatz review
-    required this.eloChange,
-    required this.datasetName, // Add datasetName parameter
+    required this.datasetType,
+    required this.datasetName,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final totalQuestions = data.length;
-    final percentageScore = ((correctAnswers / totalQuestions) * 100).round();
+  EndScreenState createState() => EndScreenState();
+}
+
+class EndScreenState extends State<EndScreen> {
+  late int oldElo;
+  late int newElo;
+  late int eloChange;
+  late Map<String, dynamic> currentRank;
+  late Map<String, dynamic> newRank;
+  late int levelWithinRank;
+  late int eloWithinLevel;
+  late String rankBadge;
+  late double progressToNextRank;
+
+  @override
+  void initState() {
+    super.initState();
     final appState = Provider.of<MyAppState>(context, listen: false);
-
-    // Update ELO and unlocked datasets in Firestore
-    appState.updateElo(appState.elo + eloChange);
-
-    if (datasetPassed) {
-      // Unlock the next dataset if the current one is passed
-      appState.unlockNextDataset(isArticleReview);
+    oldElo = widget.currentElo;
+    final percentageScore = widget.percent;
+    // Calculate new ELO locally (simulate what updateDatasetPassPercentage would do)
+    final Map<String, double> tempScores = Map<String, double>.from(appState.datasetService.datasetScores);
+    tempScores[widget.datasetName] = percentageScore;
+    double totalElo = 0.0;
+    bool all100 = true;
+    for (var ds in appState.datasetService.allWortschatzDatasets) {
+      final filename = ds['filename'];
+      final maxElo = ds['elo'] ?? 0;
+      final percent = tempScores[filename] ?? 0.0;
+      if (percent < 100) all100 = false;
+      totalElo += maxElo * (percent / 100.0);
     }
+    for (var ds in appState.datasetService.allArticleDatasets) {
+      final filename = ds['filename'];
+      final maxElo = ds['elo'] ?? 0;
+      final percent = tempScores[filename] ?? 0.0;
+      if (percent < 100) all100 = false;
+      totalElo += maxElo * (percent / 100.0);
+    }
+    for (var ds in appState.datasetService.allVerbDatasets) {
+      final filename = ds['filename'];
+      final maxElo = ds['elo'] ?? 0;
+      final percent = tempScores[filename] ?? 0.0;
+      if (percent < 100) all100 = false;
+      totalElo += maxElo * (percent / 100.0);
+    }
+    if (!all100 && totalElo >= 2100) {
+      totalElo = 2099;
+    }
+    newElo = totalElo.floor();
+    eloChange = newElo - oldElo;
+    // Calculate new rank, badge, progress
+    currentRank = MyAppState.ranks.firstWhere((rank) => oldElo >= rank['minElo'] && oldElo <= rank['maxElo'], orElse: () => MyAppState.ranks.first);
+    newRank = MyAppState.ranks.firstWhere((rank) => newElo >= rank['minElo'] && newElo <= rank['maxElo'], orElse: () => MyAppState.ranks.first);
+    levelWithinRank = ((newElo - newRank['minElo']) / 100).floor() + 1;
+    eloWithinLevel = newElo % 100;
+    rankBadge = '${newRank['name']}$levelWithinRank.svg';
+    final nextRank = MyAppState.ranks.firstWhere((rank) => rank['minElo'] > newElo, orElse: () => newRank);
+    progressToNextRank = ((newElo - newRank['minElo']) / (nextRank['minElo'] - newRank['minElo']) * 100).clamp(0, 100).toDouble();
+  }
 
-    // Update dataset pass percentage
-    appState.updateDatasetPassPercentage(datasetName, percentageScore.toDouble());
+  void _commitResults(BuildContext context) {
+    final appState = Provider.of<MyAppState>(context, listen: false);
+    // Actually update state and save to Firebase
+    print('DEBUG: EndScreen commitResults New Calculated Percentage Score=${widget.percent}');
+    appState.updateLocalDatasetScore(widget.datasetName, widget.percent);
+    if (widget.datasetPassed) {
+      appState.unlockNextDataset(widget.datasetType);
+    }
+    appState.pushStateToFirebase();
+  }
 
-    final currentRank = MyAppState.ranks.firstWhere((rank) => appState.elo >= rank['minElo'] && appState.elo <= rank['maxElo'], orElse: () => MyAppState.ranks.first);
-    final nextRank = MyAppState.ranks.firstWhere((rank) => rank['minElo'] > appState.elo, orElse: () => currentRank);
-    final progressToNextRank = ((appState.elo - currentRank['minElo']) / (nextRank['minElo'] - currentRank['minElo']) * 100).clamp(0, 100).toDouble();
-    final levelWithinRank = ((appState.elo - currentRank['minElo']) / 100).floor() + 1;
-    final eloWithinLevel = appState.elo % 100;
-    final rankBadge = appState.getRankBadge();
+  @override
+  Widget build(BuildContext context) {
+    final totalQuestions = widget.data.length;
+    // Debug logging
+    print('DEBUG: EndScreen oldElo=$oldElo, newElo=$newElo, eloChange=$eloChange, rank=${newRank['name']}, level=$levelWithinRank');
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -57,7 +117,7 @@ class EndScreen extends StatelessWidget {
           'End of Quiz',
           style: TextStyle(color: Colors.white),
         ),
-        iconTheme: IconThemeData(color: Colors.white), // Set back arrow color to white
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Stack(
         children: [
@@ -72,7 +132,7 @@ class EndScreen extends StatelessWidget {
           Center(
             child: SvgPicture.asset(
               'assets/GameOverFrame.svg',
-              width: MediaQuery.of(context).size.width * 0.6, // 60% of the width
+              width: MediaQuery.of(context).size.width * 0.6,
               fit: BoxFit.contain,
             ),
           ),
@@ -84,37 +144,40 @@ class EndScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.5, // 50% of the width
+                    width: MediaQuery.of(context).size.width * 0.5,
                     child: Text(
-                      datasetPassed
+                      widget.datasetPassed
                           ? 'Congratulations! You passed the dataset!'
                           : 'The ship was damaged beyond repair.',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                      style: TextStyle(fontSize: 20, color: Colors.white),
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  SvgPicture.asset(
-                    'assets/ranks/$rankBadge',
-                    height: 150,
+                  SizedBox(
+                    height: 140,
+                    child: Image.asset(
+                      'assets/ranks/$rankBadge',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                   Text(
-                    '${currentRank['name']} $levelWithinRank',
+                    '${newRank['name']} $levelWithinRank',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    '${eloChange > 0 ? '+' : ''}$eloChange',
+                    '${eloChange > 0 ? '+' : ''}${eloChange}',
                     style: TextStyle(
                       fontSize: 15,
-                      color: eloChange > 0 ? Colors.green : Colors.red,
+                      color: eloChange > 0 ? Colors.green : (eloChange < 0 ? Colors.red : Colors.white),
                     ),
                   ),
                   SizedBox(height: 10),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Container(
-                      width: MediaQuery.of(context).size.width * 0.5, // Reduce width
-                      height: 15, // Increase height
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: 15,
                       child: LinearProgressIndicator(
                         value: progressToNextRank / 100,
                         backgroundColor: Colors.white.withOpacity(0.3),
@@ -133,17 +196,26 @@ class EndScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => isArticleReview
-                              ? ArticlesReviewPage(
-                                  
-                                  wrongAnswerIndices: wrongAnswerIndices.toSet().toList(), // Remove duplicates
-                                  data: data,
-                                )
-                              : WortschatzReviewScreen(
-                                  wrongAnswers: totalQuestions - correctAnswers,
-                                  wrongAnswerIndices: wrongAnswerIndices.toSet().toList(), // Remove duplicates
-                                  data: data,
-                                ),
+                          builder: (context) {
+                            switch (widget.datasetType) {
+                              case DatasetType.article:
+                                return ArticlesReviewPage(
+                                  wrongAnswerIndices: widget.uniqueWrongIndices,
+                                  data: widget.data,
+                                );
+                              case DatasetType.verb:
+                                return VerbsReviewScreen(
+                                  wrongAnswerIndices: widget.uniqueWrongIndices,
+                                  data: widget.data,
+                                );
+                              case DatasetType.wortschatz:
+                              default:
+                                return WortschatzReviewScreen(
+                                  wrongAnswerIndices: widget.uniqueWrongIndices,
+                                  data: widget.data,
+                                );
+                            }
+                          },
                         ),
                       );
                     },
@@ -152,11 +224,12 @@ class EndScreen extends StatelessWidget {
                   SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
+                      _commitResults(context);
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => MyHomePage()),
                         (route) => false,
-                      ); // Return to home screen
+                      );
                     },
                     child: Text('Return to Home'),
                   ),

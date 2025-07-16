@@ -1,31 +1,59 @@
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:convert';
+import 'dart:developer' as developer;
+
+enum DatasetType { wortschatz, article, verb }
 
 class DatasetService extends ChangeNotifier {
+  bool isGuest = false;
   List<Map<String, dynamic>> allWortschatzDatasets = [
-    {'filename': 'WordLists_01.csv', 'title': 'Menschen', 'elo': 1000},
-    {'filename': 'WordLists_02.csv', 'title': 'Station im Leben', 'elo': 1050},
-    {'filename': 'WordLists_03.csv', 'title': 'Wohnen', 'elo': 1100},
-    {'filename': 'WordLists_04.csv', 'title': 'Freizeit und Kultur', 'elo': 1100},
-  ]; // Example datasets
+    {'filename': 'WordLists_01.csv', 'title': 'Menschen', 'elo': 100},
+    {'filename': 'WordLists_02.csv', 'title': 'Station im Leben', 'elo': 100},
+    {'filename': 'WordLists_03.csv', 'title': 'Wohnen', 'elo': 100},
+    {'filename': 'WordLists_04.csv', 'title': 'Freizeit und Kultur', 'elo': 100},
+  ];
 
   List<Map<String, dynamic>> allArticleDatasets = [
-    {'filename': 'd1.csv', 'title': 'Top 100', 'elo': 1100},
-    {'filename': 'd2.csv', 'title': '101 - 200', 'elo': 1200},
-    {'filename': 'd3.csv', 'title': '201 - 300', 'elo': 1300}, 
-    {'filename': 'd4.csv', 'title': '301 - 400', 'elo': 1400},
-    {'filename': 'd5.csv', 'title': '401 - 500', 'elo': 1500},
-    {'filename': 'd6.csv', 'title': '501 - 600', 'elo': 1600}, 
-  ]; // Example datasets
+    {'filename': 'd1.csv', 'title': 'Top 100', 'elo': 100},
+    {'filename': 'd2.csv', 'title': '101 - 200', 'elo': 100},
+    {'filename': 'd3.csv', 'title': '201 - 300', 'elo': 100}, 
+    {'filename': 'd4.csv', 'title': '301 - 400', 'elo': 100},
+    {'filename': 'd5.csv', 'title': '401 - 500', 'elo': 100},
+    {'filename': 'd6.csv', 'title': '501 - 600', 'elo': 100},
+    {'filename': 'd7.csv', 'title': '601 - 700', 'elo': 100},
+    {'filename': 'd8.csv', 'title': '701 - 800', 'elo': 100},
+    {'filename': 'd9.csv', 'title': '801 - 900', 'elo': 100},
+    {'filename': 'd10.csv', 'title': '901 - 1000', 'elo': 100},
+    {'filename': 'd11.csv', 'title': '1001 - 1100', 'elo': 100},
+    {'filename': 'd12.csv', 'title': '1101 - 1200', 'elo': 100},
+    {'filename': 'd13.csv', 'title': '1201 - 1300', 'elo': 100},
+    {'filename': 'd14.csv', 'title': '1301 - 1400', 'elo': 100},
+    {'filename': 'd15.csv', 'title': '1401 - 1500', 'elo': 100},
+    {'filename': 'd16.csv', 'title': '1501 - 1600', 'elo': 100},
+    {'filename': 'd17.csv', 'title': '1601 - 1700', 'elo': 100},
+    {'filename': 'd18.csv', 'title': '1701 - 1781', 'elo': 100},
+  ];
+
+  List<Map<String, dynamic>> allVerbDatasets = [
+    {'filename': 'v1.csv', 'title': 'Top 100', 'elo': 100},
+    {'filename': 'v2.csv', 'title': '101 - 200', 'elo': 100},
+    {'filename': 'v3.csv', 'title': '201 - 300', 'elo': 100},
+    {'filename': 'v4.csv', 'title': '301 - 400', 'elo': 100},
+    {'filename': 'v5.csv', 'title': '401 - 500', 'elo': 100},
+    {'filename': 'v6.csv', 'title': '501 - 600', 'elo': 100},
+    {'filename': 'v7.csv', 'title': '601 - 700', 'elo': 100},
+    {'filename': 'v8.csv', 'title': '701 - 800', 'elo': 100},
+    {'filename': 'v9.csv', 'title': '801 - 900', 'elo': 100},
+    {'filename': 'v10.csv', 'title': '901 - 1000', 'elo': 100},
+    {'filename': 'v11.csv', 'title': '1001 - 1055', 'elo': 100},
+  ];
 
   List<String> unlockedWortschatzDatasets = [];
   List<String> unlockedArticleDatasets = [];
-
+  List<String> unlockedVerbDatasets = [];
   Map<String, double> datasetScores = {};
 
   DatasetService() {
@@ -40,151 +68,27 @@ class DatasetService extends ChangeNotifier {
     if (allArticleDatasets.isNotEmpty) {
       unlockedArticleDatasets = [allArticleDatasets.first['filename']];
     }
-  }
-
-Future<void> uploadDatasetsToFirestore() async {
-  try {
-    for (var dataset in allWortschatzDatasets) {
-      final csvData = await loadCsv(dataset['filename']);
-      print('Attempting to load ${dataset['filename']}'); // Debug print
-      List<List<dynamic>> rows = csvData;
-
-      List<Map<String, String>> wortschatzRows = [];
-
-      for (var row in rows) {
-        final type = row[0] as String;
-        final prefix = row[1] as String;
-        final word = row[2] as String;
-        final suffix = row[3] as String;
-        final translation = row[4] as String;
-        final definition = row[5] as String;
-        final example = row[6] as String;
-
-        wortschatzRows.add({
-          'type': type,
-          'prefix': prefix,
-          'word': word,
-          'suffix': suffix,
-          'translation': translation,
-          'definition': definition,
-          'example': example,
-        });
-      }
-        await FirebaseFirestore.instance.collection('Wortschatz').doc(dataset['filename']).set({
-        'Wortschatz': wortschatzRows,
-      });
-      print('Uploading dataset: ${dataset['filename']}'); // Debug print
-    }
-
-    for (var dataset in allArticleDatasets) {
-     final csvData = await loadCsv(dataset['filename']);
-      print('Attempting to load ${dataset['filename']}'); // Debug print
-      List<List<dynamic>> rows = csvData;
-
-      List<Map<String, String>> articleRows = [];
-
-      for (var row in rows) {
-        final index = row[0] as String;
-        final article = row[1] as String;
-        final noun = row[2] as String;
-        final translation = row[3] as String;
-      
-
-        articleRows.add({
-          'index': index,
-          'article': article,
-          'noun': noun,
-          'translation': translation,
-        });
-      }
-        await FirebaseFirestore.instance.collection('Articles').doc(dataset['filename']).set({
-        'Articles': articleRows,
-      });
-      print('Uploading dataset: ${dataset['filename']}'); // Debug print
-    }
-
-    print('Datasets uploaded successfully');
-  } catch (e) {
-    print('Error uploading datasets to firestore: $e');
-  }
-}
-
-
-  Future<void> downloadWortschatzDatasetsFromFirestore() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      for (var dataset in allWortschatzDatasets) {
-        final localData = prefs.getString('Wortschatz_${dataset['filename']}');
-        if (localData != null) {
-          List<Map<String, String>> wortschatzRows = List<Map<String, String>>.from(json.decode(localData));
-          print('Loaded dataset from local storage: ${dataset['filename']}'); // Debug print
-        } else {
-          final doc = await FirebaseFirestore.instance.collection('Wortschatz').doc(dataset['filename']).get();
-          if (doc.exists) {
-            final data = doc.data();
-
-
-
-
-            if (data != null) {
-              List<Map<String, String>> wortschatzRows = List<Map<String, String>>.from(data['Wortschatz']);
-              // Store the data locally
-              prefs.setString('Wortschatz_${dataset['filename']}', json.encode(wortschatzRows));
-              // Process the data as needed
-              print('Downloaded dataset: ${dataset['filename']}'); // Debug print
-            }
-          }
-        }
-      }
-    } catch (e) {
-      print('Error downloading Wortschatz datasets: $e');
+    if (allVerbDatasets.isNotEmpty) {
+      unlockedVerbDatasets = [allVerbDatasets.first['filename']];
     }
   }
-
-  Future<void> downloadArticleDatasetsFromFirestore() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      for (var dataset in allArticleDatasets) {
-        final localData = prefs.getString('Articles_${dataset['filename']}');
-        if (localData != null) {
-          List<Map<String, String>> articleRows = List<Map<String, String>>.from(json.decode(localData));
-          // Process the data as needed
-          print('Loaded dataset from local storage: ${dataset['filename']}'); // Debug print
-        } else {
-          final doc = await FirebaseFirestore.instance.collection('Articles').doc(dataset['filename']).get();
-          if (doc.exists) {
-            final data = doc.data();
-            if (data != null) {
-              List<Map<String, String>> articleRows = List<Map<String, String>>.from(data['Articles']);
-              // Store the data locally
-              prefs.setString('Articles_${dataset['filename']}', json.encode(articleRows));
-              // Process the data as needed
-              print('Downloaded dataset: ${dataset['filename']}'); // Debug print
-            }
-          }
-        }
-      }
-    } catch (e) {
-      print('Error downloading Article datasets: $e');
-    }
-  }
-
-
 
   Future<void> loadStateAtLogin(String uid) async {
+    if (isGuest) return;
     final userID = uid;
     final doc = await FirebaseFirestore.instance.collection('users').doc(userID).get();
-      if (doc.exists) {
-        final data = doc.data()!;
-        unlockedWortschatzDatasets = List<String>.from(data['unlockedDatasets'] ?? [allWortschatzDatasets.first['filename']]);
-        unlockedArticleDatasets = List<String>.from(data['unlockedArticleDatasets'] ?? [allArticleDatasets.first['filename']]);
-        datasetScores = Map<String, double>.from(data['datasetPassPercentages'] ?? {});
-        notifyListeners();
-      }
-    
+    if (doc.exists) {
+      final data = doc.data()!;
+      unlockedWortschatzDatasets = List<String>.from(data['unlockedDatasets'] ?? [allWortschatzDatasets.first['filename']]);
+      unlockedArticleDatasets = List<String>.from(data['unlockedArticleDatasets'] ?? [allArticleDatasets.first['filename']]);
+      unlockedVerbDatasets = List<String>.from(data['unlockedVerbDatasets'] ?? [allVerbDatasets.first['filename']]);
+      datasetScores = Map<String, double>.from(data['datasetPassPercentages'] ?? {});
+      notifyListeners();
+    }
   }
 
   Future<void> _loadState() async {
+    if (isGuest) return;
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
@@ -192,6 +96,7 @@ Future<void> uploadDatasetsToFirestore() async {
         final data = doc.data()!;
         unlockedWortschatzDatasets = List<String>.from(data['unlockedDatasets'] ?? [allWortschatzDatasets.first['filename']]);
         unlockedArticleDatasets = List<String>.from(data['unlockedArticleDatasets'] ?? [allArticleDatasets.first['filename']]);
+        unlockedVerbDatasets = List<String>.from(data['unlockedVerbDatasets'] ?? [allVerbDatasets.first['filename']]);
         datasetScores = Map<String, double>.from(data['datasetPassPercentages'] ?? {});
         notifyListeners();
       }
@@ -199,18 +104,34 @@ Future<void> uploadDatasetsToFirestore() async {
   }
 
   Future<void> _saveState() async {
+    if (isGuest) {
+      print('DEBUG: DatasetService._saveState called but in guest mode, skipping Firestore write.');
+      return;
+    }
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      final dataToSave = {
         'unlockedDatasets': unlockedWortschatzDatasets,
         'unlockedArticleDatasets': unlockedArticleDatasets,
+        'unlockedVerbDatasets': unlockedVerbDatasets,
         'datasetPassPercentages': datasetScores,
-      }, SetOptions(merge: true));
+      };
+      print('DEBUG: DatasetService._saveState writing to Firestore for user: ${user.uid}');
+      print('DEBUG: Data being written: ${dataToSave}');
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set(dataToSave, SetOptions(merge: true));
+    } else {
+      print('DEBUG: DatasetService._saveState called but no user is logged in.');
     }
   }
 
   bool isDatasetUnlocked(String dataset, bool isArticle) {
-    return isArticle ? unlockedArticleDatasets.contains(dataset) : unlockedWortschatzDatasets.contains(dataset);
+    if (isArticle) {
+      return unlockedArticleDatasets.contains(dataset);
+    } else if (dataset.startsWith('v')) {
+      return unlockedVerbDatasets.contains(dataset);
+    } else {
+      return unlockedWortschatzDatasets.contains(dataset);
+    }
   }
 
   void unlockDataset(String dataset, bool isArticle) {
@@ -218,41 +139,71 @@ Future<void> uploadDatasetsToFirestore() async {
       if (!unlockedArticleDatasets.contains(dataset)) {
         unlockedArticleDatasets.add(dataset);
       }
+    } else if (dataset.startsWith('v')) {
+      if (!unlockedVerbDatasets.contains(dataset)) {
+        unlockedVerbDatasets.add(dataset);
+      }
     } else {
       if (!unlockedWortschatzDatasets.contains(dataset)) {
         unlockedWortschatzDatasets.add(dataset);
       }
     }
-    _saveState();
     notifyListeners();
   }
 
-  void unlockNextDataset(bool isArticle) {
-    if (isArticle) {
-      final nextDatasetIndex = unlockedArticleDatasets.length;
-      if (nextDatasetIndex < allArticleDatasets.length) {
-        unlockedArticleDatasets.add(allArticleDatasets[nextDatasetIndex]['filename']);
-        print('Unlocked next article dataset: ${allArticleDatasets[nextDatasetIndex]['filename']}'); // Debugging statement
-      }
-    } else {
-      final nextDatasetIndex = unlockedWortschatzDatasets.length;
-      if (nextDatasetIndex < allWortschatzDatasets.length) {
-        unlockedWortschatzDatasets.add(allWortschatzDatasets[nextDatasetIndex]['filename']);
-        print('Unlocked next wortschatz dataset: ${allWortschatzDatasets[nextDatasetIndex]['filename']}'); // Debugging statement
-      }
+  void unlockNextDataset(DatasetType type) {
+    switch (type) {
+      case DatasetType.article:
+        final nextDatasetIndex = unlockedArticleDatasets.length;
+        if (nextDatasetIndex < allArticleDatasets.length) {
+          if (nextDatasetIndex == 0 || (datasetScores[allArticleDatasets[nextDatasetIndex - 1]['filename']] ?? 0) >= 50) {
+            unlockedArticleDatasets.add(allArticleDatasets[nextDatasetIndex]['filename']);
+            developer.log('Unlocked next article dataset:  [38;5;2m${allArticleDatasets[nextDatasetIndex]['filename']} [0m');
+          }
+        }
+        break;
+      case DatasetType.verb:
+        final nextVerbDatasetIndex = unlockedVerbDatasets.length;
+        if (nextVerbDatasetIndex < allVerbDatasets.length) {
+          if (nextVerbDatasetIndex == 0 || (datasetScores[allVerbDatasets[nextVerbDatasetIndex - 1]['filename']] ?? 0) >= 50) {
+            unlockedVerbDatasets.add(allVerbDatasets[nextVerbDatasetIndex]['filename']);
+            developer.log('Unlocked next verb dataset:  [38;5;2m${allVerbDatasets[nextVerbDatasetIndex]['filename']} [0m');
+          }
+        }
+        break;
+      case DatasetType.wortschatz:
+      default:
+        final nextDatasetIndex = unlockedWortschatzDatasets.length;
+        if (nextDatasetIndex < allWortschatzDatasets.length) {
+          if (nextDatasetIndex == 0 || (datasetScores[allWortschatzDatasets[nextDatasetIndex - 1]['filename']] ?? 0) >= 50) {
+            unlockedWortschatzDatasets.add(allWortschatzDatasets[nextDatasetIndex]['filename']);
+            developer.log('Unlocked next wortschatz dataset:  [38;5;2m${allWortschatzDatasets[nextDatasetIndex]['filename']} [0m');
+          }
+        }
+        break;
     }
-    _saveState();
     notifyListeners();
   }
 
   void updateDatasetScore(String dataset, double score) {
+    final oldScore = datasetScores[dataset];
+    print('DEBUG: updateDatasetScore called for dataset: '
+        ' [33m$dataset [0m. Old score:  [36m$oldScore [0m, New score:  [32m$score [0m');
     datasetScores[dataset] = score;
-    _saveState();
     notifyListeners();
   }
 
   double getDatasetScore(String dataset) {
     return datasetScores[dataset] ?? 0.0;
+  }
+
+  void resetAll() {
+    unlockedWortschatzDatasets.clear();
+    unlockedArticleDatasets.clear();
+    unlockedVerbDatasets.clear();
+    datasetScores.clear();
+    _initializeDefaults();
+    notifyListeners();
   }
 
   Future<List<List<dynamic>>> loadCsv(String path) async {

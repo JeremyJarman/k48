@@ -1,13 +1,13 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 import 'my_app_state.dart';
 import 'add_health_button.dart';
-import 'noun_card.dart'; 
+import 'noun_card.dart';
 import 'end_screen.dart'; // Import the end screen
-import 'dataset_service.dart';
+import 'package:confetti/confetti.dart';
+import 'dart:developer' as developer;
+import 'dataset_service.dart'; // For DatasetType enum
 //import 'csv_loader.dart';
 //import 'package:vibration/vibration.dart'; // Import vibration package
 
@@ -16,16 +16,21 @@ class ArticlesGameplayScreen extends StatefulWidget {
   final String title; // Add title property
   final Function(int) onDatasetCompleted;
 
-  ArticlesGameplayScreen({required this.dataset, required this.title, required this.onDatasetCompleted});
+  const ArticlesGameplayScreen({
+    super.key,
+    required this.dataset,
+    required this.title,
+    required this.onDatasetCompleted,
+  });
 
   @override
-  _ArticlesGameplayScreenState createState() => _ArticlesGameplayScreenState();
+  ArticlesGameplayScreenState createState() => ArticlesGameplayScreenState();
 }
 
-class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with SingleTickerProviderStateMixin {
-  List<int> _wrongAnswerIndices = [];
+class ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with SingleTickerProviderStateMixin {
+  final List<int> _wrongAnswerIndices = [];
   List<List<dynamic>> _data = [];
-  List<String> _articles = ['der', 'die', 'das']; // Example articles
+  final List<String> _articles = ['der', 'die', 'das']; // Example articles
   List<String> _adjectives = []; // Add adjectives list
   int _currentIndex = 0;
   int _correctAnswers = 0;
@@ -38,6 +43,10 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
   late Animation<Offset> _offsetAnimation;
   late FixedExtentScrollController _scrollController;
   int _selectedArticleIndex = 0;
+  String? _currentAdjective;
+  Color? _highlightColor;
+  ConfettiController? _confettiController;
+  final DatasetType datasetType = DatasetType.article;
 
   @override
   void initState() {
@@ -65,69 +74,68 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
       }
     });
     _scrollController = FixedExtentScrollController();
+    _confettiController = ConfettiController(duration: const Duration(milliseconds: 200));
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _scrollController.dispose();
+    _confettiController?.dispose();
     super.dispose();
   }
 
   Future<void> _loadData() async {
-    final datasetService = Provider.of<DatasetService>(context, listen: false);
-    final prefs = await SharedPreferences.getInstance();
+    final datasetService = Provider.of<MyAppState>(context, listen: false).datasetService;
     final path = 'assets/${widget.dataset}';
-    print('Loading dataset from path: $path'); // Debug print
+    developer.log('Loading dataset from path: $path');
 
     try {
-      final localData = prefs.getString('Articles_${widget.dataset}');
-      if (localData != null) {
-        List<Map<String, dynamic>> decodedData = List<Map<String, dynamic>>.from(json.decode(localData));
-        _data = decodedData.map((row) => [
-          row['index'],
-          row['article'],
-          row['noun'],
-          row['translation']
-        ]).toList();
-        print('Loaded dataset from local storage: ${widget.dataset}'); // Debug print
-      } else {
-        await datasetService.downloadArticleDatasetsFromFirestore();
-        final updatedLocalData = prefs.getString('Articles_${widget.dataset}');
-        if (updatedLocalData != null) {
-          List<Map<String, dynamic>> decodedData = List<Map<String, dynamic>>.from(json.decode(updatedLocalData));
-          _data = decodedData.map((row) => [
-            row['index'],
-            row['article'],
-            row['noun'],
-            row['translation']
-          ]).toList();
-          print('Downloaded and loaded dataset: ${widget.dataset}'); // Debug print
-        }
-      }
+      final csvData = await datasetService.loadCsv(path);
+      _data = csvData;
       _data.shuffle();
       setState(() {});
+      developer.log('Loaded dataset from assets: ${widget.dataset}');
     } catch (e) {
-      print('Error loading dataset: $e'); // Debug print
+      developer.log('Error loading dataset: $e');
     }
   }
 
   Future<void> _loadAdjectives() async {
-  final datasetService = Provider.of<DatasetService>(context, listen: false);
+  final datasetService = Provider.of<MyAppState>(context, listen: false).datasetService;
   final path = 'assets/adjectives.csv';
-  print('Loading adjectives from path: $path'); // Debug print
+  developer.log('Loading adjectives from path: $path'); // Debug print
   try {
     final adjectivesData = await datasetService.loadCsv(path);
     //print('Adjectives loaded: $adjectivesData'); // Debug print
     _adjectives = adjectivesData.map((row) => row[0].toString()).toList();
     setState(() {});
   } catch (e) {
-    print('Error loading adjectives: $e'); // Debug print
+    developer.log('Error loading adjectives: $e'); // Debug print
   }
 }
 
   void _onAnswerSelected(bool isCorrect) async {
     if (isCorrect) {
+      // Set highlight color based on article
+      final article = _articles[_selectedArticleIndex];
+      setState(() {
+        if (article == 'der') {
+          _highlightColor = Colors.blue;
+        } else if (article == 'die') {
+          _highlightColor = Colors.red;
+        } else if (article == 'das') {
+          _highlightColor = Colors.green;
+        } else {
+          _highlightColor = null;
+        }
+        _confettiController?.play();
+      });
+      // Wait briefly before proceeding
+      await Future.delayed(Duration(milliseconds: 700));
+      setState(() {
+        _highlightColor = null;
+      });
       _correctAnswers++;
       _correctStreak++;
       _mana = (_mana + 1).clamp(0, 10);
@@ -135,10 +143,12 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
         _healthPoints = (_healthPoints + 1).clamp(0, 100);
       }
       if (_currentIndex >= _data.length - 1) {
-        _endGame(true);
+        _endGame();
       } else {
         setState(() {
           _currentIndex++;
+          // Pick a new adjective for the new word
+          _currentAdjective = _adjectives.isNotEmpty ? _adjectives[Random().nextInt(_adjectives.length)] : null;
         });
       }
     } else {
@@ -149,31 +159,35 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
       _showRedFlash = true;
       _controller.forward(from: 0);
       if (_healthPoints <= 0) {
-        _endGame(false);
+        _endGame();
       } else {
         setState(() {});
       }
     }
   }
 
-  void _endGame(bool datasetPassed) async {
-    //final datasetService = Provider.of<DatasetService>(context, listen: false);
+  void _endGame() async {
     final appState = Provider.of<MyAppState>(context, listen: false);
-    final eloChange = (_correctAnswers / _data.length * 100).round();
-    appState.updateElo(appState.elo + eloChange);
-    appState.updateDatasetPassPercentage(widget.dataset, (_correctAnswers / _data.length * 100).toDouble());
-    widget.onDatasetCompleted((_correctAnswers / _data.length * 100).round());
+    final uniqueWrongIndices = _wrongAnswerIndices.toSet().toList();
+    final uniqueWrongCount = uniqueWrongIndices.length;
+    final firstAttemptCorrect = _correctAnswers - uniqueWrongCount;
+    final percent = ((firstAttemptCorrect / _data.length) * 100).clamp(0, 100).toDouble();
+    final percentRounded = percent.roundToDouble();
+    final currentElo = appState.elo;
+    final datasetPassed = percentRounded > 50.0;
+    print('DEBUG: Articles_GamePlay endGame: correctAnswers=$_correctAnswers, uniqueWrongCount=$uniqueWrongCount, firstAttemptCorrect=$firstAttemptCorrect, percent=$percentRounded, currentElo=$currentElo, datasetPassed=$datasetPassed');
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => EndScreen(
           datasetPassed: datasetPassed,
           correctAnswers: _correctAnswers,
-          wrongAnswerIndices: _wrongAnswerIndices,
+          uniqueWrongIndices: uniqueWrongIndices,
+          percent: percentRounded,
+          currentElo: currentElo,
           data: _data,
-          isArticleReview: true,
-          eloChange: eloChange,
           datasetName: widget.dataset,
+          datasetType: datasetType,
         ),
       ),
     );
@@ -185,15 +199,6 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
       _healthPoints = (_healthPoints + 50).clamp(0, 100);
       _mana = 0;
     });
-  }
-  void _addScoreAndAdvance() async {
-    _correctStreak += 10;
-    _currentIndex = (_currentIndex + 10).clamp(0, _data.length - 1);
-    if (_currentIndex >= _data.length) {
-      _endGame(true);
-    } else {
-      setState(() {});
-    }
   }
 
   void _toggleTranslations() {
@@ -223,7 +228,9 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
     final currentWord = _data[_currentIndex];
     final noun = currentWord[2]; // Assuming the noun is in the first column
     final selectedArticle = _articles[_selectedArticleIndex]; // Get the currently selected article
-    final randomAdjective = _adjectives[Random().nextInt(_adjectives.length)]; // Get a random adjective
+    // Only pick a new adjective when the word changes
+    _currentAdjective ??= _adjectives.isNotEmpty ? _adjectives[Random().nextInt(_adjectives.length)] : null;
+    final randomAdjective = _currentAdjective;
     final remainingNouns = _data.length - _currentIndex; // Calculate remaining nouns
 
     return Scaffold(
@@ -276,52 +283,154 @@ class _ArticlesGameplayScreenState extends State<ArticlesGameplayScreen> with Si
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                 Center(
-                  child: IntrinsicWidth(
-                    child: NounCard(
-                      noun: noun,
-                      selectedArticle: selectedArticle, // Pass the selected article to the NounCard
-                      adjective: randomAdjective, // Pass the random adjective to the NounCard
-                    ),
-                  ),
-                ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ListWheelScrollView(
-                      controller: _scrollController,
-                      itemExtent: 100,
-                      physics: FixedExtentScrollPhysics(),
-                      diameterRatio: 1.5,
-                      onSelectedItemChanged: (index) {
-                        setState(() {
-                          _selectedArticleIndex = index;
-                        });
-                      },
-                      children: _articles.map((article) {
-                        final isSelected = _articles[_selectedArticleIndex] == article;
-                        return GestureDetector(
-                          onTap: () => _onAnswerSelected(article == currentWord[1]),
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: isSelected ? Theme.of(context).primaryColor.withOpacity(0.5) : Colors.transparent, // Highlight selected option
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              article,
-                              style: TextStyle(
-                                fontSize: 24,
-                                color: isSelected ? Colors.white : Colors.black,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      IntrinsicWidth(
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: NounCard(
+                            noun: noun,
+                            selectedArticle: selectedArticle, // Pass the selected article to the NounCard
+                            adjective: randomAdjective, // Pass the random adjective to the NounCard
+                            highlightColor: _highlightColor,
+                          ),
+                        ),
+                      ),
+                      if (_confettiController != null)
+                        ...[
+                          // Top-left confetti
+                          Positioned(
+                            left: 0,
+                            bottom: 0,
+                            child: IgnorePointer(
+                              child: ConfettiWidget(
+                                confettiController: _confettiController!,
+                                blastDirection: -pi / 4, // Up-right 
+                                blastDirectionality: BlastDirectionality.directional,
+                                shouldLoop: false,
+                                emissionFrequency: 0.05,
+                                numberOfParticles: 10,
+                                maxBlastForce: 12,
+                                minBlastForce: 6,
+                                gravity: 0.3,
+                                colors: const [Colors.white],
+                                createParticlePath: (size) {
+                                  return Path()..addOval(Rect.fromCircle(center: Offset.zero, radius: 2));
+                                },
                               ),
                             ),
                           ),
-                        );
-                      }).toList(),
-                    ),
+                          // Top-right confetti
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: IgnorePointer(
+                              child: ConfettiWidget(
+                                confettiController: _confettiController!,
+                                blastDirection: -3 * pi / 4, // Up-left
+                                blastDirectionality: BlastDirectionality.directional,
+                                shouldLoop: false,
+                                emissionFrequency: 0.05,
+                                numberOfParticles: 10,
+                                maxBlastForce: 12,
+                                minBlastForce: 6,
+                                gravity: 0.3,
+                                colors: const [Colors.white],
+                                createParticlePath: (size) {
+                                  return Path()..addOval(Rect.fromCircle(center: Offset.zero, radius: 2));
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                    ],
                   ),
                 ),
               ],
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: MediaQuery.of(context).padding.bottom + 150,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: _articles.asMap().entries.map((entry) {
+                  final idx = entry.key;
+                  final article = entry.value;
+                  final isSelected = _selectedArticleIndex == idx;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedArticleIndex = idx;
+                        });
+                        // On web, also allow tap-to-commit if already selected
+                        if (isSelected) {
+                          _onAnswerSelected(article == currentWord[1]);
+                        }
+                      },
+                      onHorizontalDragStart: (_) {
+                        setState(() {
+                          _selectedArticleIndex = idx;
+                        });
+                      },
+                      onHorizontalDragEnd: (details) {
+                        // Only allow swipe-to-commit on the selected button and only for right swipes
+                        if (_selectedArticleIndex == idx && details.primaryVelocity != null && details.primaryVelocity! > 0) {
+                          _onAnswerSelected(article == currentWord[1]);
+                        }
+                      },
+                      child: AnimatedContainer(
+                        duration: Duration(milliseconds: 200),
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        padding: EdgeInsets.symmetric(vertical: 18),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? Theme.of(context).primaryColor.withOpacity(0.7)
+                              : Theme.of(context).primaryColor.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+                            width: 2,
+                          ),
+                          boxShadow: isSelected
+                              ? [BoxShadow(color: Theme.of(context).primaryColor.withOpacity(0.3), blurRadius: 8, offset: Offset(0, 2))]
+                              : [],
+                        ),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Center(
+                              child: Text(
+                                article,
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.white,
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            if (isSelected)
+                              Positioned(
+                                right: 24,
+                                child: Icon(
+                                  Icons.arrow_forward,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
           ),
         ],

@@ -4,12 +4,12 @@ class DiamondCard extends StatelessWidget {
   final int score;
   final int mana;
 
-  DiamondCard({required this.score, required this.mana});
+  const DiamondCard({super.key, required this.score, required this.mana});
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
+      child: SizedBox(
         width: 100,
         height: 100,
         child: Stack(

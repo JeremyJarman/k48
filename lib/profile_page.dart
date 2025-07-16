@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'my_app_state.dart';
-import 'dataset_service.dart'; // Import the DatasetService
-import 'login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -11,8 +11,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   String alias = '';
-  int passedDatasets = 0;
-  double averagePassPercentage = 0.0;
   int elo = 0;
   final TextEditingController _aliasController = TextEditingController();
 
@@ -24,87 +22,114 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> loadProfileData() async {
     final appState = Provider.of<MyAppState>(context, listen: false);
-    final datasetService = appState.datasetService;
-
-    final datasetScores = datasetService.datasetScores;
-    //final unlockedWortschatzDatasets = datasetService.unlockedWortschatzDatasets;
-    //final unlockedArticleDatasets = datasetService.unlockedArticleDatasets;
-
-    final allScores = datasetScores.values.toList();
-    final totalDatasets = allScores.length;
-    final passedDatasets = allScores.where((score) => score >= 50).length; // Assuming 50 is the passing score
-    final averagePassPercentage = totalDatasets > 0
-        ? allScores.reduce((a, b) => a + b) / totalDatasets
-        : 0.0;
-
     setState(() {
       alias = appState.alias;
       elo = appState.elo;
-      this.passedDatasets = passedDatasets;
-      this.averagePassPercentage = averagePassPercentage;
+      _aliasController.text = '';
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<MyAppState>(context);
+    final rankName = MyAppState().getRank(appState.elo);
+    final levelWithinRank = (() {
+      for (var rank in MyAppState.ranks) {
+        if (appState.elo >= rank['minElo'] && appState.elo <= rank['maxElo']) {
+          int range = rank['maxElo'] - rank['minElo'] + 1;
+          int levelRange = range ~/ 3;
+          if (appState.elo < rank['minElo'] + levelRange) return 1;
+          if (appState.elo < rank['minElo'] + 2 * levelRange) return 2;
+          return 3;
+        }
+      }
+      return 0;
+    })();
+    final rankBadge = '${rankName}$levelWithinRank.svg';
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Profile', style: TextStyle(color: Colors.white)),
         backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
+        title: Text('Profile', style: TextStyle(color: Colors.white)),
         iconTheme: IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout, color: Colors.white),
-            onPressed: () async {
-              // Handle logout logic here
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-          ),
-        ],
       ),
       body: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/stars.jpg'),
+                image: AssetImage('assets/galaxy.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: kToolbarHeight + 20), // Add spacing from the top
-                TextField(
-                  controller: _aliasController,
-                  decoration: InputDecoration(
-                    labelText: 'Alias',
-                    labelStyle: TextStyle(color: Colors.white),
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.save, color: Colors.white),
-                      onPressed: () {
-                        setState(() {
-                          alias = _aliasController.text;
-                        });
-                        final appState = Provider.of<MyAppState>(context, listen: false);
-                        appState.updateAlias(alias);
-                      },
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Rank badge and name
+                  SizedBox(
+                    height: 140,
+                    child: SvgPicture.asset(
+                      'assets/ranks/$rankBadge',
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  style: TextStyle(color: Colors.white),
-                ),
-                SizedBox(height: 20),
-                Text('Passed Datasets: $passedDatasets', style: TextStyle(color: Colors.white)),
-                Text('Average Pass Percentage: ${averagePassPercentage.toStringAsFixed(2)}%', style: TextStyle(color: Colors.white)),
-                Text('ELO: $elo', style: TextStyle(color: Colors.white)),
-              ],
+                  SizedBox(height: 12),
+                  Text(
+                    '$rankName $levelWithinRank',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'ELO: ${appState.elo}',
+                    style: TextStyle(fontSize: 20, color: Colors.white70),
+                  ),
+                  SizedBox(height: 32),
+                  // Alias input
+                  TextField(
+                    controller: _aliasController,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: alias,
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white54),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      hintText: 'Enter new alias',
+                      hintStyle: TextStyle(color: Colors.white38),
+                      fillColor: Colors.white10,
+                      filled: true,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      final newAlias = _aliasController.text.trim();
+                      if (newAlias.isNotEmpty) {
+                        appState.updateAlias(newAlias);
+                        setState(() {
+                          alias = newAlias;
+                          _aliasController.text = '';
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Alias updated!')),
+                        );
+                      }
+                    },
+                    child: Text('Update Alias'),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
