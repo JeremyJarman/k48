@@ -90,6 +90,10 @@ class EndScreenState extends State<EndScreen> {
     rankBadge = '${newRank['name']}$levelWithinRank.svg';
     final nextRank = MyAppState.ranks.firstWhere((rank) => rank['minElo'] > newElo, orElse: () => newRank);
     progressToNextRank = ((newElo - newRank['minElo']) / (nextRank['minElo'] - newRank['minElo']) * 100).clamp(0, 100).toDouble();
+    // Save results as soon as EndScreen is reached
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _commitResults(context);
+    });
   }
 
   void _commitResults(BuildContext context) {
@@ -105,7 +109,6 @@ class EndScreenState extends State<EndScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final totalQuestions = widget.data.length;
     // Debug logging
     print('DEBUG: EndScreen oldElo=$oldElo, newElo=$newElo, eloChange=$eloChange, rank=${newRank['name']}, level=$levelWithinRank');
 
@@ -143,7 +146,7 @@ class EndScreenState extends State<EndScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
+                  SizedBox(
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: Text(
                       widget.datasetPassed
@@ -155,7 +158,7 @@ class EndScreenState extends State<EndScreen> {
                   ),
                   SizedBox(
                     height: 140,
-                    child: Image.asset(
+                    child: SvgPicture.asset(
                       'assets/ranks/$rankBadge',
                       fit: BoxFit.contain,
                     ),
@@ -166,7 +169,7 @@ class EndScreenState extends State<EndScreen> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    '${eloChange > 0 ? '+' : ''}${eloChange}',
+                    '${eloChange > 0 ? '+' : ''}$eloChange',
                     style: TextStyle(
                       fontSize: 15,
                       color: eloChange > 0 ? Colors.green : (eloChange < 0 ? Colors.red : Colors.white),
@@ -175,7 +178,7 @@ class EndScreenState extends State<EndScreen> {
                   SizedBox(height: 10),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Container(
+                    child: SizedBox(
                       width: MediaQuery.of(context).size.width * 0.5,
                       height: 15,
                       child: LinearProgressIndicator(
@@ -224,7 +227,6 @@ class EndScreenState extends State<EndScreen> {
                   SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      _commitResults(context);
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => MyHomePage()),

@@ -377,14 +377,42 @@ class _VerbsGameplayScreenState extends State<VerbsGameplayScreen> with SingleTi
                   ),
                 ],
               ),
-              AddHealthButton(
-                mana: _mana, 
-                onPressed: _addHealth
+              SizedBox(
+                height: 60,
+                child: Stack(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.none,
+                  children: [
+                    AddHealthButton(
+                      mana: _mana,
+                      onPressed: _addHealth,
+                    ),
+                    if (_mana == 10)
+                      Positioned(
+                        top: -28,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                          ),
+                          child: Text(
+                            'Ready',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-              IconButton(
-                icon: Icon(Icons.translate, color: Colors.white),
-                onPressed: _showTranslationDialog,
-                tooltip: 'Show translations',
+              Center(
+                child: IconButton(
+                  icon: Icon(Icons.translate, color: Colors.white, size: 30),
+                  onPressed: _showTranslationDialog,
+                  tooltip: 'Show translations',
+                  iconSize: 30,
+                ),
               ),
               Row(
                 children: [

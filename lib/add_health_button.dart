@@ -12,7 +12,7 @@ class AddHealthButton extends StatelessWidget {
       onPressed: mana == 10 ? onPressed : null, // Activate button only if mana is 10
       backgroundColor: Colors.transparent, // No background color
       elevation: 0, // Remove shadow
-      child: Icon(Icons.favorite, color: mana == 10 ? Colors.white : Colors.grey, size: 50),
+      child: Icon(Icons.favorite, color: mana == 10 ? Colors.white : Colors.grey, size: 35),
     );
   }
 }

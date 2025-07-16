@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'my_app_state.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  ProfilePageState createState() => ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class ProfilePageState extends State<ProfilePage> {
   String alias = '';
   int elo = 0;
   final TextEditingController _aliasController = TextEditingController();
@@ -45,7 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
       }
       return 0;
     })();
-    final rankBadge = '${rankName}$levelWithinRank.svg';
+    final rankBadge = '$rankName$levelWithinRank.svg';
 
     return Scaffold(
       extendBodyBehindAppBar: true,
