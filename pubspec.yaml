@@ -42,8 +42,6 @@ flutter:
     - assets/adjectives.csv
     - assets/GameOverFrame.svg
     - assets/stars.jpg
-    - assets/Stars.csv
-    - assets/WarpFrame.png
     - assets/ranks/Intern1.svg
     - assets/ranks/Intern2.svg
     - assets/ranks/Intern3.svg
