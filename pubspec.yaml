@@ -88,7 +88,6 @@ flutter:
     - assets/WordLists_02.csv
     - assets/WordLists_03.csv
     - assets/WordLists_04.csv
-    - assets/manifest.json
     - assets/v1.csv
     - assets/v2.csv
     - assets/v3.csv
