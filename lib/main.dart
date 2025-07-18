@@ -11,14 +11,20 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FlutterError.onError = (FlutterErrorDetails details){
+    print('FlutterError : ${details.exception}');
+    print(details.stack);
+  };
    
+ //runApp(MaterialApp(home: Scaffold(body: Center(child: Text('Hello World')))));
+
   runApp(
     ChangeNotifierProvider(
-      create: (_) => MyAppState(),
-      child: Builder(
-        builder: (context) => MyApp(),
-      ),
+    create: (_) => MyAppState(),
+    child: Builder(
+    builder: (context) => MyApp(),
     ),
+   ),
   );
 }
 
